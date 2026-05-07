@@ -3,258 +3,421 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Registro CTO</title>
+    <title>Painel Executivo - CTO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
         
         :root { 
-            --bg-main: #0B0F19; 
-            --bg-card: #151A27; 
-            --border-color: #2A3441; 
-            --text-main: #E2E8F0; 
-            --text-muted: #94A3B8; 
-            --accent: #3B82F6; 
-            --success: #10B981;
-            --purple: #8B5CF6;
-            --orange: #F59E0B;
+            --bg-base: #06090F; 
+            --bg-surface: #101623; 
+            --bg-surface-hover: #161D2B;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --border-focus: rgba(59, 130, 246, 0.5);
+            --text-primary: #F8FAFC; 
+            --text-secondary: #94A3B8; 
+            --brand-primary: #3B82F6; 
+            --brand-success: #10B981;
+            --brand-warning: #F59E0B;
+            --brand-purple: #8B5CF6;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-main); color: var(--text-main); }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background-color: var(--bg-base); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
         
-        .dashboard-container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+        /* Layout */
+        .wrapper { display: flex; flex-direction: column; min-height: 100vh; padding: 2rem 5%; max-width: 1600px; margin: 0 auto; gap: 2rem; }
         
-        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; padding-bottom: 16px; border-bottom: 1px solid var(--border-color); }
-        .header-title h1 { font-size: 1.8rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
-        .header-title p { color: var(--text-muted); margin-top: 4px; }
-        
-        .btn-sync { background: var(--accent); color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-        .btn-sync:hover { background: #2563EB; }
-        
-        /* Stats Cards */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 32px; }
-        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 20px; display: flex; align-items: center; gap: 16px; }
-        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 1.5rem; }
-        .stat-icon.blue { background: rgba(59, 130, 246, 0.1); color: var(--accent); }
-        .stat-icon.green { background: rgba(16, 185, 129, 0.1); color: var(--success); }
-        .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: var(--purple); }
-        .stat-icon.orange { background: rgba(245, 158, 11, 0.1); color: var(--orange); }
-        .stat-info h3 { font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
-        .stat-info p { font-size: 1.5rem; font-weight: 700; color: white; }
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+        .header-info h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header-info p { color: var(--text-secondary); font-size: 1rem; margin-top: 0.25rem; font-weight: 300; }
+        .btn-sync { background: linear-gradient(135deg, var(--brand-primary), #2563EB); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 50px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
+        .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
 
-        /* Charts */
-        .charts-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 32px; }
-        .charts-container h2 { font-size: 1.2rem; margin-bottom: 20px; color: white; border-bottom: 1px solid var(--border-color); padding-bottom: 12px; }
+        /* Stats Grid */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
+        .kpi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; transition: transform 0.2s; }
+        .kpi-card:hover { transform: translateY(-4px); border-color: var(--border-focus); }
+        .kpi-header { display: flex; justify-content: space-between; align-items: center; }
+        .kpi-title { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        .kpi-value { font-size: 2.5rem; font-weight: 700; line-height: 1; }
+        .kpi-trend { font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+        
+        .kpi-card.blue .kpi-icon { background: rgba(59, 130, 246, 0.1); color: var(--brand-primary); }
+        .kpi-card.green .kpi-icon { background: rgba(16, 185, 129, 0.1); color: var(--brand-success); }
+        .kpi-card.purple .kpi-icon { background: rgba(139, 92, 246, 0.1); color: var(--brand-purple); }
+        .kpi-card.orange .kpi-icon { background: rgba(245, 158, 11, 0.1); color: var(--brand-warning); }
+
+        /* Main Content Grid */
+        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+        
+        .panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
+        .panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
+
+        /* Ranking List */
+        .ranking-list { display: flex; flex-direction: column; gap: 1rem; }
+        .ranking-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid transparent; transition: all 0.2s; }
+        .ranking-item:hover { background: rgba(255,255,255,0.04); border-color: var(--border-subtle); }
+        .rank-pos { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 0.9rem; }
+        .rank-pos.gold { background: linear-gradient(135deg, #FDE047, #F59E0B); color: #451A03; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .rank-pos.silver { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: #0F172A; }
+        .rank-pos.bronze { background: linear-gradient(135deg, #FDBA74, #D97706); color: #451A03; }
+        .rank-info { flex: 1; }
+        .rank-name { font-weight: 600; font-size: 0.95rem; }
+        .rank-score { font-weight: 700; font-size: 1.2rem; color: var(--brand-primary); }
 
         /* Table */
-        .table-container { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-bottom: 32px; }
-        .table-header { padding: 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .table-header h2 { font-size: 1.2rem; color: white; }
+        .table-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .table-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-wrapper::-webkit-scrollbar-track { background: var(--bg-base); }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         
-        table { width: 100%; border-collapse: collapse; }
-        th { text-align: left; padding: 16px 20px; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid var(--border-color); background: #111520; }
-        td { padding: 16px 20px; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; }
+        th { position: sticky; top: 0; background: #0A0F18; z-index: 10; text-align: left; padding: 1rem 1.2rem; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-subtle); }
+        td { padding: 1rem 1.2rem; font-size: 0.9rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); white-space: nowrap; }
         tr:last-child td { border-bottom: none; }
-        tr:hover td { background: rgba(255,255,255,0.02); }
+        tr:hover td { background: var(--bg-surface-hover); }
         
-        .foto-link { color: var(--accent); text-decoration: none; display: flex; align-items: center; gap: 6px; font-weight: 500; }
-        .foto-link:hover { text-decoration: underline; }
+        .badge-mac { background: rgba(59, 130, 246, 0.1); color: #60A5FA; padding: 0.25rem 0.5rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; letter-spacing: 1px; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .badge-colab { display: flex; align-items: center; gap: 8px; }
+        .avatar-mini { width: 24px; height: 24px; border-radius: 50%; background: var(--brand-purple); display: flex; justify-content: center; align-items: center; font-size: 0.6rem; font-weight: 700; }
         
+        .foto-btn { background: rgba(255,255,255,0.05); color: var(--text-primary); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; border: 1px solid var(--border-subtle); }
+        .foto-btn:hover { background: rgba(16, 185, 129, 0.1); color: var(--brand-success); border-color: var(--brand-success); }
+        .foto-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+
         /* Loading Overlay */
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.8); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 999; font-size: 1.5rem; color: var(--accent); backdrop-filter: blur(4px); }
-        #loading span { margin-top: 12px; font-size: 1rem; color: white; font-weight: 500; }
+        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6, 9, 15, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(8px); }
+        .spinner { width: 50px; height: 50px; border: 3px solid rgba(59, 130, 246, 0.2); border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        #loading span { margin-top: 1rem; font-size: 1rem; font-weight: 500; letter-spacing: 1px; color: var(--text-secondary); }
+        @keyframes spin { to { transform: rotate(360deg); } }
         .hidden { display: none !important; }
+
+        /* Filtro Style */
+        .filter-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--bg-surface); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); }
+        .filter-container h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
+        .select-filter { background: var(--bg-base); color: var(--text-primary); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.6rem 1.2rem; border-radius: 8px; font-family: 'Outfit'; font-size: 0.95rem; outline: none; cursor: pointer; transition: border 0.2s; min-width: 200px;}
+        .select-filter:focus { border-color: var(--brand-primary); }
     </style>
 </head>
 <body>
 
     <div id="loading">
-        <i class="fa-solid fa-circle-notch fa-spin"></i>
-        <span>Buscando métricas oficiais...</span>
+        <div class="spinner"></div>
+        <span>Sincronizando Banco de Dados...</span>
     </div>
 
-    <div class="dashboard-container">
+    <div class="wrapper">
         <header>
-            <div class="header-title">
-                <h1><i class="fa-solid fa-chart-line" style="color: var(--accent)"></i> Dashboard CTO</h1>
-                <p>Produtividade da Equipe de Campo</p>
+            <div class="header-info">
+                <h1>Painel Executivo</h1>
+                <p>Métricas de Produtividade - Equipe de Campo</p>
             </div>
             <button class="btn-sync" onclick="carregarDados()">
-                <i class="fa-solid fa-rotate"></i> Atualizar Dados
+                <i class="fa-solid fa-arrows-rotate"></i> Atualizar Agora
             </button>
         </header>
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon blue"><i class="fa-solid fa-calendar-day"></i></div>
-                <div class="stat-info">
-                    <h3>Registros Hoje</h3>
-                    <p id="stat-hoje">0</p>
+        <section class="kpi-grid">
+            <div class="kpi-card blue">
+                <div class="kpi-header">
+                    <span class="kpi-title">Registros Hoje</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
                 </div>
+                <div class="kpi-value" id="stat-hoje">0</div>
+                <div class="kpi-trend" style="color: var(--brand-primary);">Últimas 24h</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon green"><i class="fa-solid fa-calendar-week"></i></div>
-                <div class="stat-info">
-                    <h3>Registros na Semana</h3>
-                    <p id="stat-semana">0</p>
+            
+            <div class="kpi-card green">
+                <div class="kpi-header">
+                    <span class="kpi-title">Registros Semana</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
                 </div>
+                <div class="kpi-value" id="stat-semana">0</div>
+                <div class="kpi-trend" style="color: var(--brand-success);">Últimos 7 dias</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon purple"><i class="fa-solid fa-calendar-days"></i></div>
-                <div class="stat-info">
-                    <h3>Registros no Mês</h3>
-                    <p id="stat-mes">0</p>
+
+            <div class="kpi-card purple">
+                <div class="kpi-header">
+                    <span class="kpi-title">Registros Mês</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-layer-group"></i></div>
                 </div>
+                <div class="kpi-value" id="stat-mes">0</div>
+                <div class="kpi-trend" style="color: var(--brand-purple);">Mês Atual</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-icon orange"><i class="fa-solid fa-trophy"></i></div>
-                <div class="stat-info">
-                    <h3>Top Colaborador (Mês)</h3>
-                    <p id="stat-top" style="font-size: 1rem; margin-top: 5px;">-</p>
+
+            <div class="kpi-card orange">
+                <div class="kpi-header">
+                    <span class="kpi-title">Total Geral</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-globe"></i></div>
                 </div>
+                <div class="kpi-value" id="stat-total">0</div>
+                <div class="kpi-trend" style="color: var(--brand-warning);">Todos os registros</div>
             </div>
+        </section>
+
+        <!-- Barra de Filtro de Tempo -->
+        <div class="filter-container">
+            <h2><i class="fa-solid fa-filter" style="color: var(--brand-primary)"></i> Filtrar Desempenho e Histórico</h2>
+            <select id="periodo-filtro" class="select-filter" onchange="aplicarFiltros()">
+                <option value="hoje">Apenas Hoje</option>
+                <option value="semana">Últimos 7 Dias</option>
+                <option value="mes" selected>Este Mês</option>
+                <option value="ano">Este Ano</option>
+                <option value="total">Todo o Período</option>
+            </select>
         </div>
 
-        <div class="charts-container">
-            <h2>Ranking Anual de Produtividade (Por Colaborador)</h2>
-            <canvas id="rankingChart" height="100"></canvas>
-        </div>
-
-        <div class="table-container">
-            <div class="table-header">
-                <h2>Últimos Registros em Campo</h2>
+        <section class="main-grid">
+            <div class="panel">
+                <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade</h2>
+                <div style="flex: 1; min-height: 300px; display: flex; align-items: center; position: relative;">
+                    <canvas id="rankingChart"></canvas>
+                </div>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data e Hora</th>
-                        <th>Colaborador</th>
-                        <th>MAC</th>
-                        <th>CTO</th>
-                        <th>Prova (Foto)</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-logs">
-                    <!-- Preenchido via JS -->
-                </tbody>
-            </table>
-        </div>
+
+            <div class="panel">
+                <h2 class="panel-title" id="titulo-ranking"><i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade</h2>
+                <div class="ranking-list" id="ranking-list-container">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+        </section>
+
+        <section class="panel">
+            <h2 class="panel-title" id="titulo-tabela"><i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado</h2>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data e Hora</th>
+                            <th>Colaborador</th>
+                            <th>MAC</th>
+                            <th>CTO</th>
+                            <th>Evidência</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabela-logs">
+                        <!-- Gerado via JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </div>
 
     <script>
-        // COLE AQUI A NOVA URL DO APPS SCRIPT
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhP1fH7hWEiC_wfbM8iuYuBhEVYo5fDh6n0KPJoUThHPgGQqR6QDy6xKRAt944sxGg/exec";
-        
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQWEkIYkT7jGEHOZTbYXH_15xuKkm2rid4g9yVBJndpMPu2ZlSDu5CkE-TAQPpxxk3/exec";
         let rankingChartInstance = null;
+        window.todosLogs = []; // Variável global para armazenar os dados sem precisar buscar de novo
 
         document.addEventListener('DOMContentLoaded', carregarDados);
 
         async function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
-            
             try {
-                // Chama a rota ?action=get_dashboard que programamos no backend
                 const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
                 const json = await res.json();
-                
                 if (json.status === "success") {
-                    processarMetricas(json.data);
-                    renderizarTabela(json.data);
+                    window.todosLogs = json.data;
+                    processarKPIsGlobais(); // Os 4 cards de cima não mudam com o filtro
+                    aplicarFiltros();       // O resto muda de acordo com o Select
                 } else {
-                    alert("Erro ao buscar dados: " + json.message);
+                    alert("Erro: " + json.message);
                 }
             } catch (err) {
-                alert("Erro de conexão ao carregar o dashboard.");
                 console.error(err);
+                alert("Falha ao sincronizar com o banco de dados.");
             }
-            
             document.getElementById('loading').classList.add('hidden');
         }
 
-        function processarMetricas(logs) {
+        function parseDateString(dateStr) {
+            if (!dateStr) return new Date(NaN);
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split(' ');
+                const datePart = parts[0];
+                const timePart = parts[1] || '00:00:00';
+                const [d, m, y] = datePart.split('/');
+                return new Date(`${y}-${m}-${d}T${timePart}`);
+            }
+            return new Date(dateStr);
+        }
+
+        function formatDataBR(dateObj) {
+            if (isNaN(dateObj.getTime())) return "Data Inválida";
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const y = dateObj.getFullYear();
+            const h = String(dateObj.getHours()).padStart(2, '0');
+            const min = String(dateObj.getMinutes()).padStart(2, '0');
+            return `${d}/${m}/${y} às ${h}:${min}`;
+        }
+
+        function getInitials(name) {
+            const parts = name.trim().split(' ');
+            if(parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+            return name.substring(0,2).toUpperCase();
+        }
+
+        // Esta função roda apenas para os 4 Cards Globais do topo
+        function processarKPIsGlobais() {
             const hoje = new Date();
-            let countHoje = 0, countSemana = 0, countMes = 0;
-            
-            const contagemColabMes = {};
-            const contagemColabAno = {}; // Para o gráfico
+            let countHoje = 0, countSemana = 0, countMes = 0, countTotal = 0;
 
-            logs.forEach(log => {
-                // Espera-se data no formato "dd/mm/yyyy hh:mm:ss" ou JS date
-                // Adaptação simples para parse de data brasileira
-                let dataLog = null;
-                if (log.dataHora.includes('/')) {
-                    const partes = log.dataHora.split(' ')[0].split('/');
-                    dataLog = new Date(partes[2], partes[1] - 1, partes[0]);
-                } else {
-                    dataLog = new Date(log.dataHora); // Fallback
-                }
-                
+            window.todosLogs.forEach(log => {
+                const dataLog = parseDateString(log.dataHora);
                 if (isNaN(dataLog.getTime())) return;
-
-                // Diferenças
-                const diffTime = Math.abs(hoje - dataLog);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-
-                if (diffDays <= 1 && dataLog.getDate() === hoje.getDate()) countHoje++;
-                if (diffDays <= 7) countSemana++;
-                if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) {
-                    countMes++;
-                    contagemColabMes[log.colaborador] = (contagemColabMes[log.colaborador] || 0) + 1;
-                }
                 
-                if (dataLog.getFullYear() === hoje.getFullYear()) {
-                    contagemColabAno[log.colaborador] = (contagemColabAno[log.colaborador] || 0) + 1;
-                }
+                countTotal++;
+                
+                const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
+                const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
+
+                if (diffDays === 0) countHoje++;
+                if (diffDays <= 7) countSemana++;
+                if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) countMes++;
             });
 
             document.getElementById('stat-hoje').innerText = countHoje;
             document.getElementById('stat-semana').innerText = countSemana;
             document.getElementById('stat-mes').innerText = countMes;
-
-            // Encontrar Top Colaborador do Mês
-            let topName = "Nenhum", maxScore = 0;
-            for (const [name, score] of Object.entries(contagemColabMes)) {
-                if (score > maxScore) { maxScore = score; topName = name; }
-            }
-            document.getElementById('stat-top').innerText = `${topName} (${maxScore})`;
-
-            // Renderizar Gráfico Anual
-            renderizarGrafico(contagemColabAno);
+            document.getElementById('stat-total').innerText = countTotal;
         }
 
-        function renderizarGrafico(dadosAno) {
+        // Função que filtra os dados baseada no select
+        function aplicarFiltros() {
+            const periodo = document.getElementById('periodo-filtro').value;
+            const hoje = new Date();
+            const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+            
+            let logsFiltrados = [];
+            const contagemColab = {};
+            
+            let labelPeriodo = "";
+            if(periodo === 'hoje') labelPeriodo = "(Apenas Hoje)";
+            else if(periodo === 'semana') labelPeriodo = "(Últimos 7 Dias)";
+            else if(periodo === 'mes') labelPeriodo = "(Este Mês)";
+            else if(periodo === 'ano') labelPeriodo = "(Este Ano)";
+            else labelPeriodo = "(Todo o Período)";
+
+            // Atualiza os títulos
+            document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
+            document.getElementById('titulo-ranking').innerHTML = `<i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
+            document.getElementById('titulo-tabela').innerHTML = `<i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
+
+            window.todosLogs.forEach(log => {
+                const dataLog = parseDateString(log.dataHora);
+                if (isNaN(dataLog.getTime())) return;
+                
+                const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
+                const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
+                
+                let incluir = false;
+                
+                if (periodo === 'hoje' && diffDays === 0) incluir = true;
+                else if (periodo === 'semana' && diffDays <= 7) incluir = true;
+                else if (periodo === 'mes' && dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
+                else if (periodo === 'ano' && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
+                else if (periodo === 'total') incluir = true;
+
+                if (incluir) {
+                    logsFiltrados.push(log);
+                    const colab = log.colaborador || "Desconhecido";
+                    contagemColab[colab] = (contagemColab[colab] || 0) + 1;
+                }
+            });
+
+            renderizarTopRanking(contagemColab);
+            renderizarGrafico(contagemColab, labelPeriodo);
+            renderizarTabela(logsFiltrados);
+        }
+
+        function renderizarTopRanking(contagem) {
+            const container = document.getElementById('ranking-list-container');
+            container.innerHTML = '';
+            
+            const arrayRank = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+            
+            if(arrayRank.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding: 2rem 0;">Nenhum registro neste período.</p>';
+                return;
+            }
+
+            const styles = ['gold', 'silver', 'bronze'];
+            
+            arrayRank.slice(0, 5).forEach((item, index) => {
+                const [nome, score] = item;
+                const posClass = index < 3 ? styles[index] : '';
+                const posNumber = index + 1;
+                
+                container.innerHTML += `
+                    <div class="ranking-item">
+                        <div class="rank-pos ${posClass}">${posNumber}º</div>
+                        <div class="rank-info">
+                            <div class="rank-name">${nome}</div>
+                        </div>
+                        <div class="rank-score">${score} <span style="font-size:0.7rem; color:var(--text-secondary); font-weight:400">registros</span></div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderizarGrafico(contagem, labelPeriodo) {
             const ctx = document.getElementById('rankingChart').getContext('2d');
             
-            const labels = Object.keys(dadosAno);
-            const data = Object.values(dadosAno);
+            const sortedData = Object.entries(contagem).sort((a,b) => b[1] - a[1]);
+            const labels = sortedData.map(i => i[0]);
+            const data = sortedData.map(i => i[1]);
 
-            if (rankingChartInstance) {
-                rankingChartInstance.destroy();
-            }
+            if (rankingChartInstance) rankingChartInstance.destroy();
+
+            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
 
             rankingChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Total de Registros (Ano)',
+                        label: `Produtividade`,
                         data: data,
-                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        backgroundColor: gradient,
                         borderColor: '#3B82F6',
                         borderWidth: 1,
-                        borderRadius: 6
+                        borderRadius: 8,
+                        barThickness: 40
                     }]
                 },
                 options: {
                     responsive: true,
+                    maintainAspectRatio: false,
                     scales: {
-                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94A3B8' } },
-                        x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                        y: { 
+                            beginAtZero: true, 
+                            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, 
+                            ticks: { color: '#94A3B8', font: { family: 'Outfit' }, stepSize: 1 } 
+                        },
+                        x: { 
+                            grid: { display: false }, 
+                            ticks: { color: '#94A3B8', font: { family: 'Outfit', weight: '500' } } 
+                        }
                     },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1E293B',
+                            titleFont: { family: 'Outfit', size: 14 },
+                            bodyFont: { family: 'Outfit', size: 14, weight: 'bold' },
+                            padding: 12,
+                            cornerRadius: 8,
+                            displayColors: false
+                        }
                     }
                 }
             });
@@ -264,28 +427,37 @@
             const tbody = document.getElementById('tabela-logs');
             tbody.innerHTML = '';
             
-            // Inverter para mostrar os mais recentes primeiro
-            const ultimos = [...logs].reverse().slice(0, 50); // Mostrar os últimos 50
+            const sortedLogs = [...logs].sort((a, b) => {
+                return parseDateString(b.dataHora) - parseDateString(a.dataHora);
+            }); 
             
-            if(ultimos.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Nenhum registro encontrado na planilha Admin.</td></tr>';
+            if(sortedLogs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Nenhum registro encontrado neste período.</td></tr>';
                 return;
             }
 
-            ultimos.forEach(log => {
+            // Mostra apenas os últimos 100 do período filtrado para não pesar
+            sortedLogs.slice(0, 100).forEach(log => {
                 const tr = document.createElement('tr');
                 
-                let linkFoto = '<span style="color:#64748B">Sem foto</span>';
+                const dataFormatada = formatDataBR(parseDateString(log.dataHora));
+                
+                let btnFoto = '<a href="#" class="foto-btn disabled"><i class="fa-solid fa-image-slash"></i> Sem Foto</a>';
                 if (log.foto && log.foto.startsWith('http')) {
-                    linkFoto = `<a href="${log.foto}" target="_blank" class="foto-link"><i class="fa-regular fa-image"></i> Ver Foto</a>`;
+                    btnFoto = `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Foto</a>`;
                 }
 
                 tr.innerHTML = `
-                    <td>${log.dataHora}</td>
-                    <td style="font-weight: 500; color: white;">${log.colaborador}</td>
-                    <td><span style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-family: monospace;">${log.mac}</span></td>
-                    <td>${log.cto}</td>
-                    <td>${linkFoto}</td>
+                    <td style="color: var(--text-secondary)">${dataFormatada}</td>
+                    <td>
+                        <div class="badge-colab">
+                            <div class="avatar-mini">${getInitials(log.colaborador)}</div>
+                            ${log.colaborador}
+                        </div>
+                    </td>
+                    <td><span class="badge-mac">${log.mac}</span></td>
+                    <td style="font-weight: 600;">${log.cto}</td>
+                    <td>${btnFoto}</td>
                 `;
                 tbody.appendChild(tr);
             });
