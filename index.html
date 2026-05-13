@@ -184,13 +184,17 @@
         <!-- Barra de Filtro de Tempo -->
         <div class="filter-container">
             <h2><i class="fa-solid fa-filter" style="color: var(--brand-primary)"></i> Filtrar Desempenho e Histórico</h2>
-            <select id="periodo-filtro" class="select-filter" onchange="aplicarFiltros()">
-                <option value="hoje">Apenas Hoje</option>
-                <option value="semana">Últimos 7 Dias</option>
-                <option value="mes" selected>Este Mês</option>
-                <option value="ano">Este Ano</option>
-                <option value="total">Todo o Período</option>
-            </select>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="date" id="data-especifica" class="select-filter" style="display: none;" onchange="aplicarFiltros()">
+                <select id="periodo-filtro" class="select-filter" onchange="toggleDataEspecifica()">
+                    <option value="hoje">Apenas Hoje</option>
+                    <option value="semana">Últimos 7 Dias</option>
+                    <option value="mes" selected>Este Mês</option>
+                    <option value="ano">Este Ano</option>
+                    <option value="total">Todo o Período</option>
+                    <option value="data">Data Específica</option>
+                </select>
+            </div>
         </div>
 
         <section class="panel" style="margin-bottom: 1.5rem;">
@@ -416,6 +420,17 @@
             document.getElementById('stat-total').innerText = countTotal;
         }
 
+        function toggleDataEspecifica() {
+            const periodo = document.getElementById('periodo-filtro').value;
+            const dataInput = document.getElementById('data-especifica');
+            if (periodo === 'data') {
+                dataInput.style.display = 'block';
+            } else {
+                dataInput.style.display = 'none';
+            }
+            aplicarFiltros();
+        }
+
         // Função que filtra os dados baseada no select
         function aplicarFiltros() {
             const periodo = document.getElementById('periodo-filtro').value;
@@ -430,7 +445,16 @@
             else if(periodo === 'semana') labelPeriodo = "(Últimos 7 Dias)";
             else if(periodo === 'mes') labelPeriodo = "(Este Mês)";
             else if(periodo === 'ano') labelPeriodo = "(Este Ano)";
-            else labelPeriodo = "(Todo o Período)";
+            else if(periodo === 'total') labelPeriodo = "(Todo o Período)";
+            else if(periodo === 'data') {
+                const dataVal = document.getElementById('data-especifica').value;
+                if (dataVal) {
+                    const [y, m, d] = dataVal.split('-');
+                    labelPeriodo = `(Data: ${d}/${m}/${y})`;
+                } else {
+                    labelPeriodo = "(Data Específica)";
+                }
+            }
 
             // Atualiza os títulos
             document.getElementById('titulo-grafico').innerHTML = \`<i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">\${labelPeriodo}</span>\`;
@@ -451,6 +475,17 @@
                 else if (periodo === 'mes' && dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
                 else if (periodo === 'ano' && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
                 else if (periodo === 'total') incluir = true;
+                else if (periodo === 'data') {
+                    const dataVal = document.getElementById('data-especifica').value;
+                    if (dataVal) {
+                        const [y, m, d] = dataVal.split('-');
+                        if (dataLog.getFullYear() === parseInt(y) && 
+                            dataLog.getMonth() === parseInt(m) - 1 && 
+                            dataLog.getDate() === parseInt(d)) {
+                            incluir = true;
+                        }
+                    }
+                }
 
                 if (incluir) {
                     logsFiltrados.push(log);
