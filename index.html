@@ -102,6 +102,27 @@
         .filter-container h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
         .select-filter { background: var(--bg-base); color: var(--text-primary); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.6rem 1.2rem; border-radius: 8px; font-family: 'Outfit'; font-size: 0.95rem; outline: none; cursor: pointer; transition: border 0.2s; min-width: 200px;}
         .select-filter:focus { border-color: var(--brand-primary); }
+
+        /* Gestão de Técnicos */
+        .input-tecnico {
+            background: var(--bg-base);
+            color: var(--text-primary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 0.75rem 1.2rem;
+            border-radius: 8px;
+            font-family: 'Outfit';
+            font-size: 0.95rem;
+            outline: none;
+            flex: 1;
+            transition: border 0.2s;
+        }
+        .input-tecnico:focus { border-color: var(--brand-primary); }
+        .add-tecnico-form { display: flex; gap: 1rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tecnicos-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0.8rem; }
+        .tecnico-item { display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 1rem; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border-subtle); transition: all 0.2s; }
+        .tecnico-item:hover { border-color: var(--border-focus); background: rgba(255,255,255,0.04); }
+        .btn-remover { background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.3); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; transition: all 0.2s; font-family: 'Outfit'; }
+        .btn-remover:hover { background: rgba(239, 68, 68, 0.2); }
     </style>
 </head>
 <body>
@@ -172,6 +193,19 @@
             </select>
         </div>
 
+        <section class="panel" style="margin-bottom: 1.5rem;">
+            <h2 class="panel-title"><i class="fa-solid fa-users" style="color: var(--brand-purple)"></i> Gerenciar Técnicos</h2>
+            <div class="tecnicos-manager">
+                <div class="add-tecnico-form">
+                    <input type="text" id="novo-tecnico-nome" placeholder="Nome do novo técnico..." class="input-tecnico" onkeypress="if(event.key === 'Enter') adicionarTecnico()">
+                    <button class="btn-sync" onclick="adicionarTecnico()"><i class="fa-solid fa-plus"></i> Adicionar Técnico</button>
+                </div>
+                <div class="tecnicos-list" id="lista-tecnicos">
+                    <!-- Gerado via JS -->
+                </div>
+            </div>
+        </section>
+
         <section class="main-grid">
             <div class="panel">
                 <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade</h2>
@@ -210,16 +244,109 @@
     </div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwQWEkIYkT7jGEHOZTbYXH_15xuKkm2rid4g9yVBJndpMPu2ZlSDu5CkE-TAQPpxxk3/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMyfJpX3_7dkZ9FA4V7W7Ss56_rP6a14JTUQnal-2jdgnscDu6Hlcj58aT8KXozMqU/exec";
         let rankingChartInstance = null;
-        window.todosLogs = []; // Variável global para armazenar os dados sem precisar buscar de novo
+        window.todosLogs = [];
+        let tecnicosGlobais = [];
 
-        document.addEventListener('DOMContentLoaded', carregarDados);
+        document.addEventListener('DOMContentLoaded', () => {
+            carregarDados();
+            carregarTecnicos();
+        });
+
+        // --- GESTÃO DE TÉCNICOS VIA APPS SCRIPT ---
+        async function carregarTecnicos() {
+            const lista = document.getElementById('lista-tecnicos');
+            lista.innerHTML = '<p style="color:var(--text-secondary); grid-column: 1 / -1;"><i class="fa-solid fa-spinner fa-spin"></i> Carregando técnicos do servidor...</p>';
+            
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=get_tecnicos`);
+                const json = await res.json();
+                
+                if (json.status === "success") {
+                    tecnicosGlobais = json.data || [];
+                    renderizarListaTecnicos();
+                } else {
+                    lista.innerHTML = `<p style="color:red; grid-column: 1 / -1;">Erro ao carregar: ${json.message}</p>`;
+                }
+            } catch (e) {
+                lista.innerHTML = `<p style="color:red; grid-column: 1 / -1;">Falha na conexão com o servidor.</p>`;
+            }
+        }
+
+        function renderizarListaTecnicos() {
+            const lista = document.getElementById('lista-tecnicos');
+            lista.innerHTML = '';
+            
+            if (tecnicosGlobais.length === 0) {
+                lista.innerHTML = '<p style="color:var(--text-secondary); grid-column: 1 / -1; padding: 1rem 0;">Nenhum técnico cadastrado no servidor. Adicione acima para que apareçam no formulário do técnico.</p>';
+                return;
+            }
+            
+            tecnicosGlobais.forEach((tecnico, index) => {
+                lista.innerHTML += `
+                    <div class="tecnico-item">
+                        <span><i class="fa-solid fa-user" style="color: var(--brand-purple); margin-right: 8px;"></i> ${tecnico}</span>
+                        <button class="btn-remover" onclick="removerTecnico('${tecnico}')" title="Remover técnico"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        async function adicionarTecnico() {
+            const input = document.getElementById('novo-tecnico-nome');
+            const nome = input.value.trim();
+            if (!nome) return;
+            
+            if (tecnicosGlobais.find(t => t.toLowerCase() === nome.toLowerCase())) {
+                alert("Este técnico já está cadastrado!");
+                return;
+            }
+
+            const btn = document.querySelector('.add-tecnico-form .btn-sync');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adicionando...';
+            btn.disabled = true;
+            
+            const formData = new URLSearchParams();
+            formData.append('action', 'add_tecnico');
+            formData.append('nome', nome);
+            
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                input.value = '';
+                tecnicosGlobais.push(nome);
+                renderizarListaTecnicos();
+                setTimeout(carregarTecnicos, 2000); 
+            } catch (err) {
+                alert("Erro ao adicionar técnico na nuvem.");
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        async function removerTecnico(nome) {
+            if(confirm(`Tem certeza que deseja remover ${nome} da lista?`)) {
+                const formData = new URLSearchParams();
+                formData.append('action', 'remove_tecnico');
+                formData.append('nome', nome);
+                
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', body: formData, mode: 'no-cors' });
+                    tecnicosGlobais = tecnicosGlobais.filter(t => t !== nome);
+                    renderizarListaTecnicos();
+                } catch (err) {
+                    alert("Erro ao remover técnico da nuvem.");
+                }
+            }
+        }
+        // --------------------------
 
         async function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
+                const res = await fetch(\`\${SCRIPT_URL}?action=get_dashboard\`);
                 const json = await res.json();
                 if (json.status === "success") {
                     window.todosLogs = json.data;
@@ -242,7 +369,7 @@
                 const datePart = parts[0];
                 const timePart = parts[1] || '00:00:00';
                 const [d, m, y] = datePart.split('/');
-                return new Date(`${y}-${m}-${d}T${timePart}`);
+                return new Date(\`\${y}-\${m}-\${d}T\${timePart}\`);
             }
             return new Date(dateStr);
         }
@@ -254,7 +381,7 @@
             const y = dateObj.getFullYear();
             const h = String(dateObj.getHours()).padStart(2, '0');
             const min = String(dateObj.getMinutes()).padStart(2, '0');
-            return `${d}/${m}/${y} às ${h}:${min}`;
+            return \`\${d}/\${m}/\${y} às \${h}:\${min}\`;
         }
 
         function getInitials(name) {
@@ -306,9 +433,9 @@
             else labelPeriodo = "(Todo o Período)";
 
             // Atualiza os títulos
-            document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
-            document.getElementById('titulo-ranking').innerHTML = `<i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
-            document.getElementById('titulo-tabela').innerHTML = `<i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
+            document.getElementById('titulo-grafico').innerHTML = \`<i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">\${labelPeriodo}</span>\`;
+            document.getElementById('titulo-ranking').innerHTML = \`<i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">\${labelPeriodo}</span>\`;
+            document.getElementById('titulo-tabela').innerHTML = \`<i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">\${labelPeriodo}</span>\`;
 
             window.todosLogs.forEach(log => {
                 const dataLog = parseDateString(log.dataHora);
@@ -355,15 +482,15 @@
                 const posClass = index < 3 ? styles[index] : '';
                 const posNumber = index + 1;
                 
-                container.innerHTML += `
+                container.innerHTML += \`
                     <div class="ranking-item">
-                        <div class="rank-pos ${posClass}">${posNumber}º</div>
+                        <div class="rank-pos \${posClass}">\${posNumber}º</div>
                         <div class="rank-info">
-                            <div class="rank-name">${nome}</div>
+                            <div class="rank-name">\${nome}</div>
                         </div>
-                        <div class="rank-score">${score} <span style="font-size:0.7rem; color:var(--text-secondary); font-weight:400">registros</span></div>
+                        <div class="rank-score">\${score} <span style="font-size:0.7rem; color:var(--text-secondary); font-weight:400">registros</span></div>
                     </div>
-                `;
+                \`;
             });
         }
 
@@ -385,7 +512,7 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: `Produtividade`,
+                        label: \`Produtividade\`,
                         data: data,
                         backgroundColor: gradient,
                         borderColor: '#3B82F6',
@@ -444,21 +571,21 @@
                 
                 let btnFoto = '<a href="#" class="foto-btn disabled"><i class="fa-solid fa-image-slash"></i> Sem Foto</a>';
                 if (log.foto && log.foto.startsWith('http')) {
-                    btnFoto = `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Foto</a>`;
+                    btnFoto = \`<a href="\${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Foto</a>\`;
                 }
 
-                tr.innerHTML = `
-                    <td style="color: var(--text-secondary)">${dataFormatada}</td>
+                tr.innerHTML = \`
+                    <td style="color: var(--text-secondary)">\${dataFormatada}</td>
                     <td>
                         <div class="badge-colab">
-                            <div class="avatar-mini">${getInitials(log.colaborador)}</div>
-                            ${log.colaborador}
+                            <div class="avatar-mini">\${getInitials(log.colaborador)}</div>
+                            \${log.colaborador}
                         </div>
                     </td>
-                    <td><span class="badge-mac">${log.mac}</span></td>
-                    <td style="font-weight: 600;">${log.cto}</td>
-                    <td>${btnFoto}</td>
-                `;
+                    <td><span class="badge-mac">\${log.mac}</span></td>
+                    <td style="font-weight: 600;">\${log.cto}</td>
+                    <td>\${btnFoto}</td>
+                \`;
                 tbody.appendChild(tr);
             });
         }
