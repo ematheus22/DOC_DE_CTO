@@ -350,20 +350,29 @@
         async function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
             try {
-                const res = await fetch(\`\${SCRIPT_URL}?action=get_dashboard\`);
-                const json = await res.json();
+                const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
+                const text = await res.text();
+                let json;
+                try {
+                    json = JSON.parse(text);
+                } catch (e) {
+                    throw new Error("Resposta inválida do servidor: " + text.substring(0, 100));
+                }
+
                 if (json.status === "success") {
                     window.todosLogs = json.data;
-                    processarKPIsGlobais(); // Os 4 cards de cima não mudam com o filtro
-                    aplicarFiltros();       // O resto muda de acordo com o Select
+                    processarKPIsGlobais();
+                    aplicarFiltros();
                 } else {
-                    alert("Erro: " + json.message);
+                    console.error("Erro na API:", json.message);
+                    document.getElementById('titulo-tabela').innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:red"></i> Erro: ${json.message}`;
                 }
             } catch (err) {
-                console.error(err);
-                alert("Falha ao sincronizar com o banco de dados.");
+                console.error("Erro no catch:", err);
+                document.getElementById('titulo-tabela').innerHTML = `<i class="fa-solid fa-triangle-exclamation" style="color:red"></i> Falha de Conexão: Verifique o link do script ou o CORS.`;
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
             }
-            document.getElementById('loading').classList.add('hidden');
         }
 
         function parseDateString(dateStr) {
