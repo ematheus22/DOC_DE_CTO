@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Executivo - CTO</title>
+    <title>Painel Executivo Premium - CTO</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
         
         :root { 
-            --bg-base: #06090F; 
-            --bg-surface: #101623; 
-            --bg-surface-hover: #161D2B;
-            --border-subtle: rgba(255, 255, 255, 0.05);
+            --bg-base: #020617; 
+            --bg-surface: rgba(15, 23, 42, 0.7); 
+            --bg-surface-hover: rgba(30, 41, 59, 0.8);
+            --border-subtle: rgba(255, 255, 255, 0.08);
             --border-focus: rgba(59, 130, 246, 0.5);
             --text-primary: #F8FAFC; 
             --text-secondary: #94A3B8; 
@@ -21,190 +21,323 @@
             --brand-success: #10B981;
             --brand-warning: #F59E0B;
             --brand-purple: #8B5CF6;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-blur: blur(12px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background-color: var(--bg-base); color: var(--text-primary); -webkit-font-smoothing: antialiased; }
+        body { 
+            background-color: var(--bg-base); 
+            color: var(--text-primary); 
+            -webkit-font-smoothing: antialiased;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            background-attachment: fixed;
+        }
         
         /* Layout */
         .wrapper { display: flex; flex-direction: column; min-height: 100vh; padding: 2rem 5%; max-width: 1600px; margin: 0 auto; gap: 2rem; }
         
         /* Header */
-        header { display: flex; justify-content: space-between; align-items: flex-end; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
-        .header-info h1 { font-size: 2.2rem; font-weight: 700; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .header-info p { color: var(--text-secondary); font-size: 1rem; margin-top: 0.25rem; font-weight: 300; }
-        .btn-sync { background: linear-gradient(135deg, var(--brand-primary), #2563EB); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 50px; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3); }
-        .btn-sync:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4); }
+        header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 1.5rem 2rem; 
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-subtle);
+            border-radius: 24px;
+        }
+        .header-info h1 { 
+            font-size: 2rem; 
+            font-weight: 700; 
+            letter-spacing: -0.5px; 
+            background: linear-gradient(90deg, #fff, #94A3B8); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+        }
+        .header-info p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem; }
+        
+        .btn-sync { 
+            background: linear-gradient(135deg, var(--brand-primary), #2563EB); 
+            color: white; border: none; padding: 0.7rem 1.5rem; 
+            border-radius: 12px; font-weight: 600; cursor: pointer; 
+            display: flex; align-items: center; gap: 0.6rem; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        .btn-sync:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4); }
 
         /* Stats Grid */
         .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; }
-        .kpi-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; position: relative; overflow: hidden; transition: transform 0.2s; }
-        .kpi-card:hover { transform: translateY(-4px); border-color: var(--border-focus); }
+        .kpi-card { 
+            background: var(--bg-surface); 
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-subtle); 
+            border-radius: 24px; padding: 1.8rem; 
+            display: flex; flex-direction: column; gap: 1rem; 
+            position: relative; overflow: hidden; 
+            transition: all 0.3s ease; 
+        }
+        .kpi-card:hover { transform: translateY(-6px); border-color: var(--brand-primary); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--accent-color, var(--brand-primary)), transparent);
+        }
         .kpi-header { display: flex; justify-content: space-between; align-items: center; }
-        .kpi-title { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-        .kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
-        .kpi-value { font-size: 2.5rem; font-weight: 700; line-height: 1; }
-        .kpi-trend { font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 4px; }
+        .kpi-title { font-size: 0.8rem; color: var(--text-secondary); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .kpi-icon { 
+            width: 44px; height: 44px; border-radius: 12px; 
+            display: flex; justify-content: center; align-items: center; font-size: 1.3rem; 
+        }
+        .kpi-value { font-size: 2.8rem; font-weight: 800; line-height: 1; margin: 0.5rem 0; }
+        .kpi-trend { font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 6px; }
         
-        .kpi-card.blue .kpi-icon { background: rgba(59, 130, 246, 0.1); color: var(--brand-primary); }
-        .kpi-card.green .kpi-icon { background: rgba(16, 185, 129, 0.1); color: var(--brand-success); }
-        .kpi-card.purple .kpi-icon { background: rgba(139, 92, 246, 0.1); color: var(--brand-purple); }
-        .kpi-card.orange .kpi-icon { background: rgba(245, 158, 11, 0.1); color: var(--brand-warning); }
+        .kpi-card.blue { --accent-color: var(--brand-primary); }
+        .kpi-card.green { --accent-color: var(--brand-success); }
+        .kpi-card.purple { --accent-color: var(--brand-purple); }
+        .kpi-card.orange { --accent-color: var(--brand-warning); }
+
+        .kpi-card.blue .kpi-icon { background: rgba(59, 130, 246, 0.15); color: var(--brand-primary); }
+        .kpi-card.green .kpi-icon { background: rgba(16, 185, 129, 0.15); color: var(--brand-success); }
+        .kpi-card.purple .kpi-icon { background: rgba(139, 92, 246, 0.15); color: var(--brand-purple); }
+        .kpi-card.orange .kpi-icon { background: rgba(245, 158, 11, 0.15); color: var(--brand-warning); }
+
+        /* Control Bar */
+        .control-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--glass-bg); backdrop-filter: var(--glass-blur);
+            padding: 1.2rem 2rem; border-radius: 20px; border: 1px solid var(--border-subtle);
+            flex-wrap: wrap; gap: 1.5rem;
+        }
+        .controls-group { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .control-label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* Select & Date */
+        .select-filter, .date-filter { 
+            background: rgba(15, 23, 42, 0.8); color: var(--text-primary); 
+            border: 1px solid var(--border-subtle); padding: 0.7rem 1.2rem; 
+            border-radius: 12px; font-family: 'Outfit'; font-size: 0.95rem; 
+            outline: none; cursor: pointer; transition: all 0.2s; 
+        }
+        .select-filter:hover, .date-filter:hover { border-color: var(--brand-primary); background: rgba(30, 41, 59, 0.9); }
+        .date-filter { display: none; }
+
+        /* Metric Toggle */
+        .metric-toggle {
+            display: flex; background: rgba(15, 23, 42, 0.8);
+            padding: 4px; border-radius: 12px; border: 1px solid var(--border-subtle);
+        }
+        .toggle-btn {
+            padding: 0.6rem 1.2rem; border-radius: 8px; border: none;
+            background: transparent; color: var(--text-secondary);
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .toggle-btn.active {
+            background: var(--brand-primary); color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
 
         /* Main Content Grid */
-        .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; }
-        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+        .main-grid { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; }
+        @media (max-width: 1200px) { .main-grid { grid-template-columns: 1fr; } }
         
-        .panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; padding: 1.5rem; display: flex; flex-direction: column; }
-        .panel-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--text-primary); }
+        .panel { 
+            background: var(--bg-surface); border: 1px solid var(--border-subtle); 
+            border-radius: 24px; padding: 2rem; display: flex; flex-direction: column;
+            backdrop-filter: var(--glass-blur);
+        }
+        .panel-title { 
+            font-size: 1.2rem; font-weight: 700; margin-bottom: 2rem; 
+            display: flex; align-items: center; gap: 0.7rem; color: var(--text-primary); 
+        }
 
         /* Ranking List */
-        .ranking-list { display: flex; flex-direction: column; gap: 1rem; }
-        .ranking-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid transparent; transition: all 0.2s; }
-        .ranking-item:hover { background: rgba(255,255,255,0.04); border-color: var(--border-subtle); }
-        .rank-pos { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 700; font-size: 0.9rem; }
-        .rank-pos.gold { background: linear-gradient(135deg, #FDE047, #F59E0B); color: #451A03; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .ranking-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .ranking-item { 
+            display: flex; align-items: center; gap: 1rem; padding: 1.2rem; 
+            background: rgba(255,255,255,0.02); border-radius: 16px; 
+            border: 1px solid transparent; transition: all 0.3s ease; 
+        }
+        .ranking-item:hover { background: rgba(255,255,255,0.05); border-color: var(--border-subtle); transform: scale(1.02); }
+        .rank-pos { 
+            width: 36px; height: 36px; border-radius: 10px; 
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: 800; font-size: 1rem; 
+        }
+        .rank-pos.gold { background: linear-gradient(135deg, #FDE047, #F59E0B); color: #451A03; }
         .rank-pos.silver { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: #0F172A; }
         .rank-pos.bronze { background: linear-gradient(135deg, #FDBA74, #D97706); color: #451A03; }
+        .rank-pos.other { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+        
         .rank-info { flex: 1; }
-        .rank-name { font-weight: 600; font-size: 0.95rem; }
-        .rank-score { font-weight: 700; font-size: 1.2rem; color: var(--brand-primary); }
+        .rank-name { font-weight: 600; font-size: 1rem; }
+        .rank-score { font-weight: 800; font-size: 1.3rem; color: var(--brand-primary); }
 
         /* Table */
-        .table-wrapper { overflow-x: auto; max-height: 500px; overflow-y: auto; border-radius: 12px; border: 1px solid var(--border-subtle); }
-        .table-wrapper::-webkit-scrollbar { width: 8px; height: 8px; }
-        .table-wrapper::-webkit-scrollbar-track { background: var(--bg-base); }
-        .table-wrapper::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .table-wrapper { 
+            overflow-x: auto; max-height: 500px; overflow-y: auto; 
+            border-radius: 16px; border: 1px solid var(--border-subtle); 
+            background: rgba(0,0,0,0.2);
+        }
+        .table-wrapper::-webkit-scrollbar { width: 6px; }
+        .table-wrapper::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         
         table { width: 100%; border-collapse: separate; border-spacing: 0; }
-        th { position: sticky; top: 0; background: #0A0F18; z-index: 10; text-align: left; padding: 1rem 1.2rem; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border-subtle); }
-        td { padding: 1rem 1.2rem; font-size: 0.9rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); white-space: nowrap; }
-        tr:last-child td { border-bottom: none; }
+        th { 
+            position: sticky; top: 0; background: #0F172A; z-index: 10; 
+            text-align: left; padding: 1.2rem; font-size: 0.75rem; font-weight: 700; 
+            color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px; 
+            border-bottom: 1px solid var(--border-subtle); 
+        }
+        td { padding: 1.2rem; font-size: 0.9rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); }
         tr:hover td { background: var(--bg-surface-hover); }
         
-        .badge-mac { background: rgba(59, 130, 246, 0.1); color: #60A5FA; padding: 0.25rem 0.5rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; letter-spacing: 1px; border: 1px solid rgba(59, 130, 246, 0.2); }
-        .badge-colab { display: flex; align-items: center; gap: 8px; }
-        .avatar-mini { width: 24px; height: 24px; border-radius: 50%; background: var(--brand-purple); display: flex; justify-content: center; align-items: center; font-size: 0.6rem; font-weight: 700; }
+        .badge-mac { background: rgba(59, 130, 246, 0.1); color: #60A5FA; padding: 0.3rem 0.6rem; border-radius: 8px; font-family: monospace; font-size: 0.85rem; font-weight: 600; border: 1px solid rgba(59, 130, 246, 0.2); }
+        .badge-colab { display: flex; align-items: center; gap: 10px; font-weight: 500; }
+        .avatar-mini { width: 28px; height: 28px; border-radius: 8px; background: var(--brand-purple); display: flex; justify-content: center; align-items: center; font-size: 0.7rem; font-weight: 800; color: white; }
         
-        .foto-btn { background: rgba(255,255,255,0.05); color: var(--text-primary); text-decoration: none; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; border: 1px solid var(--border-subtle); }
+        .foto-btn { 
+            background: rgba(255,255,255,0.03); color: var(--text-primary); 
+            text-decoration: none; padding: 0.5rem 1rem; border-radius: 8px; 
+            font-size: 0.8rem; font-weight: 600; display: inline-flex; align-items: center; 
+            gap: 8px; transition: all 0.2s; border: 1px solid var(--border-subtle); 
+        }
         .foto-btn:hover { background: rgba(16, 185, 129, 0.1); color: var(--brand-success); border-color: var(--brand-success); }
-        .foto-btn.disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+        .foto-btn.disabled { opacity: 0.4; cursor: not-allowed; }
 
-        /* Loading Overlay */
-        #loading { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(6, 9, 15, 0.85); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; backdrop-filter: blur(8px); }
-        .spinner { width: 50px; height: 50px; border: 3px solid rgba(59, 130, 246, 0.2); border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 1s linear infinite; }
-        #loading span { margin-top: 1rem; font-size: 1rem; font-weight: 500; letter-spacing: 1px; color: var(--text-secondary); }
+        /* Loading */
+        #loading { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.9); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(10px); }
+        .spinner { width: 60px; height: 60px; border: 4px solid rgba(59, 130, 246, 0.1); border-top-color: var(--brand-primary); border-radius: 50%; animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite; }
+        #loading span { margin-top: 1.5rem; font-size: 1rem; font-weight: 600; color: var(--text-secondary); letter-spacing: 2px; text-transform: uppercase; }
         @keyframes spin { to { transform: rotate(360deg); } }
         .hidden { display: none !important; }
 
-        /* Filtro Style */
-        .filter-container { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: var(--bg-surface); padding: 1rem 1.5rem; border-radius: 12px; border: 1px solid var(--border-subtle); }
-        .filter-container h2 { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;}
-        .select-filter { background: var(--bg-base); color: var(--text-primary); border: 1px solid rgba(59, 130, 246, 0.3); padding: 0.6rem 1.2rem; border-radius: 8px; font-family: 'Outfit'; font-size: 0.95rem; outline: none; cursor: pointer; transition: border 0.2s; min-width: 200px;}
-        .select-filter:focus { border-color: var(--brand-primary); }
+        /* Visual helpers */
+        .chart-container { position: relative; flex: 1; min-height: 350px; }
+        .doughnut-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
     <div id="loading">
         <div class="spinner"></div>
-        <span>Sincronizando Banco de Dados...</span>
+        <span>Sincronizando...</span>
     </div>
 
     <div class="wrapper">
         <header>
             <div class="header-info">
-                <h1>Painel Executivo</h1>
-                <p>Métricas de Produtividade - Equipe de Campo</p>
+                <h1>Painel Executivo Premium</h1>
+                <p id="header-subtitle">Inteligência Operacional de Campo</p>
             </div>
             <button class="btn-sync" onclick="carregarDados()">
-                <i class="fa-solid fa-arrows-rotate"></i> Atualizar Agora
+                <i class="fa-solid fa-arrows-rotate"></i> Atualizar Dados
             </button>
         </header>
 
         <section class="kpi-grid">
             <div class="kpi-card blue">
                 <div class="kpi-header">
-                    <span class="kpi-title">Registros Hoje</span>
-                    <div class="kpi-icon"><i class="fa-solid fa-bolt"></i></div>
+                    <span class="kpi-title" id="kpi-title-hoje">Hoje (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-hoje">0</div>
-                <div class="kpi-trend" style="color: var(--brand-primary);">Últimas 24h</div>
+                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas 24h</div>
             </div>
             
             <div class="kpi-card green">
                 <div class="kpi-header">
-                    <span class="kpi-title">Registros Semana</span>
+                    <span class="kpi-title" id="kpi-title-semana">Semana (MACs)</span>
                     <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-semana">0</div>
-                <div class="kpi-trend" style="color: var(--brand-success);">Últimos 7 dias</div>
+                <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i> Últimos 7 dias</div>
             </div>
 
             <div class="kpi-card purple">
                 <div class="kpi-header">
-                    <span class="kpi-title">Registros Mês</span>
-                    <div class="kpi-icon"><i class="fa-solid fa-layer-group"></i></div>
+                    <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-mes">0</div>
-                <div class="kpi-trend" style="color: var(--brand-purple);">Mês Atual</div>
+                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês Atual</div>
             </div>
 
             <div class="kpi-card orange">
                 <div class="kpi-header">
-                    <span class="kpi-title">Total Geral</span>
-                    <div class="kpi-icon"><i class="fa-solid fa-globe"></i></div>
+                    <span class="kpi-title" id="kpi-title-total">Total (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-earth-americas"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-total">0</div>
-                <div class="kpi-trend" style="color: var(--brand-warning);">Todos os registros</div>
+                <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o histórico</div>
             </div>
         </section>
 
-        <!-- Barra de Filtro de Tempo -->
-        <div class="filter-container">
-            <h2><i class="fa-solid fa-filter" style="color: var(--brand-primary)"></i> Filtrar Desempenho e Histórico</h2>
-            <select id="periodo-filtro" class="select-filter" onchange="aplicarFiltros()">
-                <option value="hoje">Apenas Hoje</option>
-                <option value="semana">Últimos 7 Dias</option>
-                <option value="mes" selected>Este Mês</option>
-                <option value="ano">Este Ano</option>
-                <option value="total">Todo o Período</option>
-            </select>
-        </div>
+        <section class="control-bar">
+            <div class="controls-group">
+                <span class="control-label">Métrica:</span>
+                <div class="metric-toggle">
+                    <button class="toggle-btn active" onclick="setMetrica('mac')" id="btn-mac">MACs</button>
+                    <button class="toggle-btn" onclick="setMetrica('cto')" id="btn-cto">CTOs</button>
+                </div>
+            </div>
+
+            <div class="controls-group">
+                <span class="control-label">Período:</span>
+                <select id="periodo-filtro" class="select-filter" onchange="toggleDataEspecifica()">
+                    <option value="hoje">Hoje</option>
+                    <option value="semana">Últimos 7 Dias</option>
+                    <option value="mes" selected>Este Mês</option>
+                    <option value="ano">Este Ano</option>
+                    <option value="total">Tudo</option>
+                    <option value="data">Data Específica</option>
+                </select>
+                <input type="date" id="data-especifica" class="date-filter" onchange="aplicarFiltros()">
+            </div>
+        </section>
 
         <section class="main-grid">
             <div class="panel">
-                <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade</h2>
-                <div style="flex: 1; min-height: 300px; display: flex; align-items: center; position: relative;">
+                <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-bar" style="color: var(--brand-primary)"></i> Ranking de Performance</h2>
+                <div class="chart-container">
                     <canvas id="rankingChart"></canvas>
                 </div>
             </div>
 
-            <div class="panel">
-                <h2 class="panel-title" id="titulo-ranking"><i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade</h2>
-                <div class="ranking-list" id="ranking-list-container">
-                    <!-- Gerado via JS -->
+            <div class="panel doughnut-panel">
+                <h2 class="panel-title"><i class="fa-solid fa-chart-pie" style="color: var(--brand-purple)"></i> Distribuição de Equipe</h2>
+                <div style="width: 100%; max-width: 300px;">
+                    <canvas id="distroChart"></canvas>
                 </div>
             </div>
         </section>
 
-        <section class="panel">
-            <h2 class="panel-title" id="titulo-tabela"><i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado</h2>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Data e Hora</th>
-                            <th>Colaborador</th>
-                            <th>MAC</th>
-                            <th>CTO</th>
-                            <th>Evidência</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabela-logs">
-                        <!-- Gerado via JS -->
-                    </tbody>
-                </table>
+        <section class="main-grid" style="grid-template-columns: 1fr 2fr;">
+            <div class="panel">
+                <h2 class="panel-title" id="titulo-ranking"><i class="fa-solid fa-trophy" style="color: var(--brand-warning)"></i> Líderes do Período</h2>
+                <div class="ranking-list" id="ranking-list-container"></div>
+            </div>
+
+            <div class="panel">
+                <h2 class="panel-title" id="titulo-tabela"><i class="fa-solid fa-timeline" style="color: var(--brand-success)"></i> Log de Atividades</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Técnico</th>
+                                <th>MAC</th>
+                                <th>CTO</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-logs"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </div>
@@ -212,9 +345,34 @@
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6tdT0URlgf4ES50MHQnAwlpgJDzp8w4mF8I2qUA5s71Y1J984dnDn3SKa_HcHhBlT/exec";
         let rankingChartInstance = null;
-        window.todosLogs = []; // Variável global para armazenar os dados sem precisar buscar de novo
+        let distroChartInstance = null;
+        window.todosLogs = [];
+        let metricaAtual = 'mac'; // 'mac' ou 'cto'
 
         document.addEventListener('DOMContentLoaded', carregarDados);
+
+        function setMetrica(metrica) {
+            metricaAtual = metrica;
+            document.getElementById('btn-mac').classList.toggle('active', metrica === 'mac');
+            document.getElementById('btn-cto').classList.toggle('active', metrica === 'cto');
+            
+            // Atualiza labels dos KPIs
+            const suffix = metrica === 'mac' ? '(MACs)' : '(CTOs)';
+            document.getElementById('kpi-title-hoje').innerText = `Hoje ${suffix}`;
+            document.getElementById('kpi-title-semana').innerText = `Semana ${suffix}`;
+            document.getElementById('kpi-title-mes').innerText = `Este Mês ${suffix}`;
+            document.getElementById('kpi-title-total').innerText = `Total ${suffix}`;
+            
+            processarKPIsGlobais();
+            aplicarFiltros();
+        }
+
+        function toggleDataEspecifica() {
+            const periodo = document.getElementById('periodo-filtro').value;
+            const dateInput = document.getElementById('data-especifica');
+            dateInput.style.display = (periodo === 'data') ? 'block' : 'none';
+            aplicarFiltros();
+        }
 
         async function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
@@ -223,8 +381,8 @@
                 const json = await res.json();
                 if (json.status === "success") {
                     window.todosLogs = json.data;
-                    processarKPIsGlobais(); // Os 4 cards de cima não mudam com o filtro
-                    aplicarFiltros();       // O resto muda de acordo com o Select
+                    processarKPIsGlobais();
+                    aplicarFiltros();
                 } else {
                     alert("Erro: " + json.message);
                 }
@@ -254,7 +412,7 @@
             const y = dateObj.getFullYear();
             const h = String(dateObj.getHours()).padStart(2, '0');
             const min = String(dateObj.getMinutes()).padStart(2, '0');
-            return `${d}/${m}/${y} às ${h}:${min}`;
+            return `${d}/${m}/${y} ${h}:${min}`;
         }
 
         function getInitials(name) {
@@ -263,52 +421,62 @@
             return name.substring(0,2).toUpperCase();
         }
 
-        // Esta função roda apenas para os 4 Cards Globais do topo
         function processarKPIsGlobais() {
             const hoje = new Date();
-            let countHoje = 0, countSemana = 0, countMes = 0, countTotal = 0;
+            const counts = { hoje: 0, semana: 0, mes: 0, total: 0 };
+            const uniqueCTOs = { hoje: new Set(), semana: new Set(), mes: new Set(), total: new Set() };
 
             window.todosLogs.forEach(log => {
                 const dataLog = parseDateString(log.dataHora);
                 if (isNaN(dataLog.getTime())) return;
                 
-                countTotal++;
-                
                 const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
                 const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
                 const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
 
-                if (diffDays === 0) countHoje++;
-                if (diffDays <= 7) countSemana++;
-                if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) countMes++;
+                const checkAdd = (key) => {
+                    if (metricaAtual === 'mac') counts[key]++;
+                    else uniqueCTOs[key].add(`${log.colaborador}|${log.cto}`);
+                };
+
+                checkAdd('total');
+                if (diffDays === 0) checkAdd('hoje');
+                if (diffDays <= 7) checkAdd('semana');
+                if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) checkAdd('mes');
             });
 
-            document.getElementById('stat-hoje').innerText = countHoje;
-            document.getElementById('stat-semana').innerText = countSemana;
-            document.getElementById('stat-mes').innerText = countMes;
-            document.getElementById('stat-total').innerText = countTotal;
+            const getFinalValue = (key) => metricaAtual === 'mac' ? counts[key] : uniqueCTOs[key].size;
+
+            document.getElementById('stat-hoje').innerText = getFinalValue('hoje');
+            document.getElementById('stat-semana').innerText = getFinalValue('semana');
+            document.getElementById('stat-mes').innerText = getFinalValue('mes');
+            document.getElementById('stat-total').innerText = getFinalValue('total');
         }
 
-        // Função que filtra os dados baseada no select
         function aplicarFiltros() {
             const periodo = document.getElementById('periodo-filtro').value;
             const hoje = new Date();
             const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
             
             let logsFiltrados = [];
-            const contagemColab = {};
+            const contagemColabRaw = {}; // { colab: Set(CTOs) } ou { colab: count(MACs) }
             
             let labelPeriodo = "";
-            if(periodo === 'hoje') labelPeriodo = "(Apenas Hoje)";
-            else if(periodo === 'semana') labelPeriodo = "(Últimos 7 Dias)";
-            else if(periodo === 'mes') labelPeriodo = "(Este Mês)";
-            else if(periodo === 'ano') labelPeriodo = "(Este Ano)";
-            else labelPeriodo = "(Todo o Período)";
+            if(periodo === 'hoje') labelPeriodo = "Hoje";
+            else if(periodo === 'semana') labelPeriodo = "7 Dias";
+            else if(periodo === 'mes') labelPeriodo = "Este Mês";
+            else if(periodo === 'ano') labelPeriodo = "Este Ano";
+            else if(periodo === 'total') labelPeriodo = "Total";
+            else if(periodo === 'data') {
+                const dataVal = document.getElementById('data-especifica').value;
+                if (dataVal) {
+                    const [y, m, d] = dataVal.split('-');
+                    labelPeriodo = `${d}/${m}/${y}`;
+                } else labelPeriodo = "Data Selecionada";
+            }
 
-            // Atualiza os títulos
-            document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-column" style="color: var(--brand-primary)"></i> Gráfico de Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
-            document.getElementById('titulo-ranking').innerHTML = `<i class="fa-solid fa-medal" style="color: var(--brand-warning)"></i> Top Produtividade <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
-            document.getElementById('titulo-tabela').innerHTML = `<i class="fa-solid fa-list-check" style="color: var(--brand-success)"></i> Histórico Detalhado <span style="font-size:0.8rem; color:var(--text-secondary); margin-left:8px">${labelPeriodo}</span>`;
+            const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
+            document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-bar" style="color: var(--brand-primary)"></i> Ranking de ${metricLabel} <span style="font-size:0.8rem; opacity:0.6; margin-left:8px">[${labelPeriodo}]</span>`;
 
             window.todosLogs.forEach(log => {
                 const dataLog = parseDateString(log.dataHora);
@@ -318,107 +486,123 @@
                 const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
                 
                 let incluir = false;
-                
                 if (periodo === 'hoje' && diffDays === 0) incluir = true;
                 else if (periodo === 'semana' && diffDays <= 7) incluir = true;
                 else if (periodo === 'mes' && dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
                 else if (periodo === 'ano' && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
                 else if (periodo === 'total') incluir = true;
+                else if (periodo === 'data') {
+                    const dataVal = document.getElementById('data-especifica').value;
+                    if (dataVal) {
+                        const [y, m, d] = dataVal.split('-');
+                        if (dataLog.getFullYear() == y && dataLog.getMonth() == (m-1) && dataLog.getDate() == d) incluir = true;
+                    }
+                }
 
                 if (incluir) {
                     logsFiltrados.push(log);
                     const colab = log.colaborador || "Desconhecido";
-                    contagemColab[colab] = (contagemColab[colab] || 0) + 1;
+                    if (metricaAtual === 'mac') {
+                        contagemColabRaw[colab] = (contagemColabRaw[colab] || 0) + 1;
+                    } else {
+                        if (!contagemColabRaw[colab]) contagemColabRaw[colab] = new Set();
+                        contagemColabRaw[colab].add(log.cto);
+                    }
                 }
             });
 
-            renderizarTopRanking(contagemColab);
-            renderizarGrafico(contagemColab, labelPeriodo);
+            // Normalizar contagem
+            const finalCount = {};
+            for (const c in contagemColabRaw) {
+                finalCount[c] = metricaAtual === 'mac' ? contagemColabRaw[c] : contagemColabRaw[c].size;
+            }
+
+            renderizarTopRanking(finalCount);
+            renderizarGraficos(finalCount);
             renderizarTabela(logsFiltrados);
         }
 
         function renderizarTopRanking(contagem) {
             const container = document.getElementById('ranking-list-container');
             container.innerHTML = '';
-            
             const arrayRank = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
             
             if(arrayRank.length === 0) {
-                container.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding: 2rem 0;">Nenhum registro neste período.</p>';
+                container.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding: 2rem 0;">Sem dados.</p>';
                 return;
             }
 
-            const styles = ['gold', 'silver', 'bronze'];
-            
+            const badges = ['gold', 'silver', 'bronze'];
             arrayRank.slice(0, 5).forEach((item, index) => {
                 const [nome, score] = item;
-                const posClass = index < 3 ? styles[index] : '';
-                const posNumber = index + 1;
-                
+                const badge = index < 3 ? badges[index] : 'other';
                 container.innerHTML += `
                     <div class="ranking-item">
-                        <div class="rank-pos ${posClass}">${posNumber}º</div>
-                        <div class="rank-info">
-                            <div class="rank-name">${nome}</div>
-                        </div>
-                        <div class="rank-score">${score} <span style="font-size:0.7rem; color:var(--text-secondary); font-weight:400">registros</span></div>
+                        <div class="rank-pos ${badge}">${index + 1}</div>
+                        <div class="rank-info"><div class="rank-name">${nome}</div></div>
+                        <div class="rank-score">${score}</div>
                     </div>
                 `;
             });
         }
 
-        function renderizarGrafico(contagem, labelPeriodo) {
-            const ctx = document.getElementById('rankingChart').getContext('2d');
-            
-            const sortedData = Object.entries(contagem).sort((a,b) => b[1] - a[1]);
-            const labels = sortedData.map(i => i[0]);
-            const data = sortedData.map(i => i[1]);
+        function renderizarGraficos(contagem) {
+            const sorted = Object.entries(contagem).sort((a,b) => b[1] - a[1]);
+            const labels = sorted.map(i => i[0]);
+            const values = sorted.map(i => i[1]);
 
+            // Bar Chart
+            const ctxBar = document.getElementById('rankingChart').getContext('2d');
             if (rankingChartInstance) rankingChartInstance.destroy();
-
-            const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+            
+            const gradient = ctxBar.createLinearGradient(0, 0, 0, 400);
             gradient.addColorStop(0, 'rgba(59, 130, 246, 0.8)');
-            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.1)');
+            gradient.addColorStop(1, 'rgba(59, 130, 246, 0.05)');
 
-            rankingChartInstance = new Chart(ctx, {
+            rankingChartInstance = new Chart(ctxBar, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: `Produtividade`,
-                        data: data,
+                        data: values,
                         backgroundColor: gradient,
                         borderColor: '#3B82F6',
-                        borderWidth: 1,
-                        borderRadius: 8,
-                        barThickness: 40
+                        borderWidth: 2,
+                        borderRadius: 12,
+                        barThickness: 32
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#94A3B8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94A3B8' } }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+
+            // Doughnut Chart
+            const ctxDist = document.getElementById('distroChart').getContext('2d');
+            if (distroChartInstance) distroChartInstance.destroy();
+            distroChartInstance = new Chart(ctxDist, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#06B6D4'],
+                        borderWidth: 0,
+                        hoverOffset: 15
                     }]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { 
-                            beginAtZero: true, 
-                            grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false }, 
-                            ticks: { color: '#94A3B8', font: { family: 'Outfit' }, stepSize: 1 } 
-                        },
-                        x: { 
-                            grid: { display: false }, 
-                            ticks: { color: '#94A3B8', font: { family: 'Outfit', weight: '500' } } 
-                        }
-                    },
-                    plugins: {
+                    plugins: { 
                         legend: { display: false },
-                        tooltip: {
-                            backgroundColor: '#1E293B',
-                            titleFont: { family: 'Outfit', size: 14 },
-                            bodyFont: { family: 'Outfit', size: 14, weight: 'bold' },
-                            padding: 12,
-                            cornerRadius: 8,
-                            displayColors: false
-                        }
-                    }
+                        tooltip: { cornerRadius: 10, padding: 12 }
+                    },
+                    cutout: '70%'
                 }
             });
         }
@@ -426,37 +610,19 @@
         function renderizarTabela(logs) {
             const tbody = document.getElementById('tabela-logs');
             tbody.innerHTML = '';
+            const sorted = [...logs].sort((a, b) => parseDateString(b.dataHora) - parseDateString(a.dataHora)); 
             
-            const sortedLogs = [...logs].sort((a, b) => {
-                return parseDateString(b.dataHora) - parseDateString(a.dataHora);
-            }); 
-            
-            if(sortedLogs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">Nenhum registro encontrado neste período.</td></tr>';
-                return;
-            }
-
-            // Mostra apenas os últimos 100 do período filtrado para não pesar
-            sortedLogs.slice(0, 100).forEach(log => {
+            sorted.slice(0, 50).forEach(log => {
                 const tr = document.createElement('tr');
-                
-                const dataFormatada = formatDataBR(parseDateString(log.dataHora));
-                
-                let btnFoto = '<a href="#" class="foto-btn disabled"><i class="fa-solid fa-image-slash"></i> Sem Foto</a>';
-                if (log.foto && log.foto.startsWith('http')) {
-                    btnFoto = `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-arrow-up-right-from-square"></i> Ver Foto</a>`;
-                }
+                const btnFoto = (log.foto && log.foto.startsWith('http')) 
+                    ? `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-camera"></i> Ver</a>`
+                    : `<a href="#" class="foto-btn disabled"><i class="fa-solid fa-ban"></i></a>`;
 
                 tr.innerHTML = `
-                    <td style="color: var(--text-secondary)">${dataFormatada}</td>
-                    <td>
-                        <div class="badge-colab">
-                            <div class="avatar-mini">${getInitials(log.colaborador)}</div>
-                            ${log.colaborador}
-                        </div>
-                    </td>
+                    <td>${formatDataBR(parseDateString(log.dataHora))}</td>
+                    <td><div class="badge-colab"><div class="avatar-mini">${getInitials(log.colaborador)}</div>${log.colaborador}</div></td>
                     <td><span class="badge-mac">${log.mac}</span></td>
-                    <td style="font-weight: 600;">${log.cto}</td>
+                    <td style="font-weight:700">${log.cto}</td>
                     <td>${btnFoto}</td>
                 `;
                 tbody.appendChild(tr);
