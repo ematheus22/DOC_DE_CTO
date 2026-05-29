@@ -1,933 +1,1219 @@
+<!-- feito e imprementado por matheus eduardo lopes pereira, assistente de projetista -->
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Painel Executivo Premium - CTO</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-    :root {
-      --bg-base: #050812;
-      --bg-surface: rgba(11, 18, 32, 0.78);
-      --bg-surface-strong: rgba(14, 24, 43, 0.92);
-      --bg-surface-hover: rgba(30, 41, 59, 0.8);
-      --border-subtle: rgba(180, 205, 255, 0.14);
-      --text-primary: #F8FAFC;
-      --text-secondary: #9DB0CA;
-      --brand-primary: #2EC4B6;
-      --brand-success: #18C964;
-      --brand-warning: #F8B84E;
-      --brand-purple: #7C5CFF;
-      --brand-blue: #3B82F6;
-      --glass-bg: rgba(9, 16, 30, 0.72);
-      --glass-blur: blur(18px);
-      --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.34);
-    }
-
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-
-    body {
-      min-width: 0;
-      overflow-x: hidden;
-      background-color: var(--bg-base);
-      color: var(--text-primary);
-      -webkit-font-smoothing: antialiased;
-      background-image:
-        linear-gradient(140deg, rgba(46, 196, 182, 0.24) 0%, transparent 30%),
-        radial-gradient(ellipse at 16% 8%, rgba(59, 130, 246, 0.34) 0%, transparent 34%),
-        radial-gradient(ellipse at 82% 18%, rgba(124, 92, 255, 0.28) 0%, transparent 36%),
-        radial-gradient(ellipse at 48% 52%, rgba(24, 201, 100, 0.14) 0%, transparent 34%),
-        linear-gradient(180deg, #071525 0%, #050812 42%, #070816 100%);
-      background-size: 140% 140%, 130% 130%, 130% 130%, 120% 120%, 100% 100%;
-      background-attachment: fixed;
-      animation: backgroundDrift 16s ease-in-out infinite alternate;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background:
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.028) 1px, transparent 1px),
-        linear-gradient(115deg, transparent 0 44%, rgba(46, 196, 182, 0.08) 45%, transparent 52%);
-      background-size: 64px 64px, 64px 64px, 100% 100%;
-      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.25));
-      animation: gridFloat 22s linear infinite;
-    }
-
-    body::after {
-      content: '';
-      position: fixed;
-      inset: -24%;
-      pointer-events: none;
-      background:
-        conic-gradient(from 140deg at 22% 34%, transparent 0 18%, rgba(46, 196, 182, 0.18) 28%, transparent 40% 100%),
-        conic-gradient(from 260deg at 78% 58%, transparent 0 12%, rgba(59, 130, 246, 0.16) 24%, rgba(124, 92, 255, 0.12) 34%, transparent 48% 100%);
-      filter: blur(42px);
-      opacity: 0.9;
-      animation: auraMove 18s ease-in-out infinite alternate;
-    }
-
-    @keyframes backgroundDrift {
-      0% { background-position: 0% 0%, 8% 4%, 92% 8%, 44% 50%, 0 0; }
-      100% { background-position: 20% 16%, 2% 16%, 78% 28%, 56% 42%, 0 0; }
-    }
-
-    @keyframes gridFloat {
-      to { background-position: 64px 64px, 64px 64px, 0 0; }
-    }
-
-    @keyframes auraMove {
-      0% { transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1); }
-      100% { transform: translate3d(3%, 2%, 0) rotate(7deg) scale(1.04); }
-    }
-
-    .wrapper {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      padding: 2rem clamp(1rem, 4vw, 4rem);
-      max-width: 1500px;
-      margin: 0 auto;
-      gap: 1.5rem;
-      position: relative;
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 2rem;
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border-subtle);
-      border-radius: 22px;
-      box-shadow: var(--shadow-panel);
-    }
-
-    .header-info h1 {
-      font-size: 2rem;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(90deg, #fff, #94A3B8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .header-info p { color: var(--text-secondary); font-size: 0.9rem; margin-top: 0.2rem; }
-
-    .btn-sync {
-      background: linear-gradient(135deg, var(--brand-primary), var(--brand-blue));
-      color: white;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 12px 28px rgba(46, 196, 182, 0.22);
-    }
-
-    .btn-sync:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 16px 34px rgba(46, 196, 182, 0.3); }
-
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.25rem; }
-
-    .kpi-card {
-      background:
-        linear-gradient(135deg, rgba(255,255,255,0.075), rgba(255,255,255,0.018)),
-        radial-gradient(circle at 86% 20%, color-mix(in srgb, var(--accent-color) 26%, transparent), transparent 28%),
-        rgba(8, 15, 29, 0.82);
-      backdrop-filter: var(--glass-blur);
-      border: 1px solid var(--border-subtle);
-      border-radius: 18px;
-      padding: 1.25rem;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      grid-template-rows: auto 1fr auto;
-      gap: 0.85rem 1rem;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s ease;
-      min-height: 150px;
-      box-shadow: 0 18px 52px rgba(0,0,0,0.28);
-    }
-
-    .kpi-card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent-color) 70%, white); box-shadow: 0 22px 58px rgba(0,0,0,0.36); }
-
-    .kpi-card::before {
-      content: '';
-      position: absolute;
-      inset: 0 auto 0 0;
-      width: 4px;
-      background: linear-gradient(180deg, var(--accent-color, var(--brand-primary)), transparent 86%);
-    }
-
-    .kpi-card::after {
-      content: '';
-      position: absolute;
-      right: 1.1rem;
-      bottom: 1rem;
-      width: 96px;
-      height: 34px;
-      opacity: 0.18;
-      background: linear-gradient(135deg, transparent 10%, var(--accent-color) 11% 14%, transparent 15% 34%, var(--accent-color) 35% 38%, transparent 39% 58%, var(--accent-color) 59% 62%, transparent 63%);
-      clip-path: polygon(0 78%, 18% 52%, 34% 62%, 50% 28%, 68% 42%, 88% 10%, 100% 18%, 100% 100%, 0 100%);
-    }
-
-    .kpi-header { display: flex; justify-content: space-between; align-items: center; grid-column: 1; }
-    .kpi-title { font-size: 0.76rem; color: var(--text-secondary); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-
-    .kpi-icon {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.3rem;
-      grid-column: 2;
-      grid-row: 1 / span 2;
-    }
-
-    .kpi-value {
-      grid-column: 1;
-      font-size: clamp(2.35rem, 4vw, 3.15rem);
-      font-weight: 800;
-      line-height: 0.95;
-      margin: 0;
-      letter-spacing: -0.03em;
-    }
-
-    .kpi-trend {
-      grid-column: 1 / -1;
-      font-size: 0.82rem;
-      font-weight: 700;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      width: fit-content;
-      padding: 0.38rem 0.62rem;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 999px;
-      background: rgba(255,255,255,0.04);
-    }
-
-    .kpi-card.blue { --accent-color: var(--brand-primary); }
-    .kpi-card.green { --accent-color: var(--brand-success); }
-    .kpi-card.purple { --accent-color: var(--brand-purple); }
-    .kpi-card.orange { --accent-color: var(--brand-warning); }
-
-    .kpi-card.blue .kpi-icon { background: rgba(46, 196, 182, 0.15); color: var(--brand-primary); }
-    .kpi-card.green .kpi-icon { background: rgba(16, 185, 129, 0.15); color: var(--brand-success); }
-    .kpi-card.purple .kpi-icon { background: rgba(139, 92, 246, 0.15); color: var(--brand-purple); }
-    .kpi-card.orange .kpi-icon { background: rgba(245, 158, 11, 0.15); color: var(--brand-warning); }
-
-    .control-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: var(--glass-bg);
-      backdrop-filter: var(--glass-blur);
-      padding: 1rem 1.6rem;
-      border-radius: 20px;
-      border: 1px solid var(--border-subtle);
-      flex-wrap: wrap;
-      gap: 1.5rem;
-      box-shadow: var(--shadow-panel);
-    }
-
-    .controls-group { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-    .control-label { font-size: 0.85rem; font-weight: 600; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .select-filter, .date-filter {
-      background: rgba(15, 23, 42, 0.8);
-      color: var(--text-primary);
-      border: 1px solid var(--border-subtle);
-      padding: 0.7rem 1.2rem;
-      border-radius: 12px;
-      font-family: 'Outfit';
-      font-size: 0.95rem;
-      outline: none;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-
-    .select-filter:hover, .date-filter:hover { border-color: var(--brand-primary); background: rgba(30, 41, 59, 0.9); }
-    .date-filter { display: none; }
-
-    .metric-toggle {
-      display: flex;
-      background: rgba(15, 23, 42, 0.8);
-      padding: 4px;
-      border-radius: 12px;
-      border: 1px solid var(--border-subtle);
-    }
-
-    .toggle-btn {
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .toggle-btn.active {
-      background: linear-gradient(135deg, var(--brand-primary), var(--brand-blue));
-      color: white;
-      box-shadow: 0 8px 18px rgba(46, 196, 182, 0.22);
-    }
-
-    .insights-grid {
-      display: grid;
-      grid-template-columns: minmax(280px, 0.9fr) minmax(460px, 1.65fr) minmax(260px, 0.86fr);
-      gap: 1.5rem;
-      align-items: stretch;
-    }
-
-    .activity-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
-
-    @media (max-width: 1280px) {
-      .insights-grid { grid-template-columns: 1fr 1.35fr; }
-      .doughnut-panel { grid-column: 1 / -1; }
-    }
-
-    @media (max-width: 900px) {
-      .insights-grid { grid-template-columns: 1fr; }
-      header { flex-direction: column; align-items: flex-start; gap: 1rem; }
-      .performance-row { grid-template-columns: 1fr; gap: 0.45rem; }
-      .performance-value { text-align: left; }
-    }
-
-    .panel {
-      background: linear-gradient(180deg, var(--bg-surface-strong), rgba(8, 13, 26, 0.86));
-      border: 1px solid var(--border-subtle);
-      border-radius: 22px;
-      padding: 1.55rem;
-      display: flex;
-      flex-direction: column;
-      backdrop-filter: var(--glass-blur);
-      box-shadow: var(--shadow-panel);
-      min-width: 0;
-    }
-
-    .panel-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 1.35rem;
-      display: flex;
-      align-items: center;
-      gap: 0.7rem;
-      color: var(--text-primary);
-    }
-
-    .panel-title span { white-space: nowrap; }
-
-    .period-chip {
-      color: var(--text-secondary);
-      font-size: 0.76rem;
-      font-weight: 700;
-      padding: 0.24rem 0.5rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--border-subtle);
-      border-radius: 999px;
-    }
-
-    .ranking-list { display: flex; flex-direction: column; gap: 0.8rem; }
-
-    .ranking-item {
-      display: grid;
-      grid-template-columns: 42px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 0.95rem;
-      padding: 1rem;
-      background: rgba(255,255,255,0.04);
-      border-radius: 14px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
-    }
-
-    .ranking-item:hover { background: rgba(255,255,255,0.05); border-color: var(--border-subtle); transform: scale(1.02); }
-
-    .rank-pos {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-weight: 800;
-      font-size: 1rem;
-    }
-
-    .rank-pos.gold { background: linear-gradient(135deg, #FDE047, #F59E0B); color: #451A03; }
-    .rank-pos.silver { background: linear-gradient(135deg, #E2E8F0, #94A3B8); color: #0F172A; }
-    .rank-pos.bronze { background: linear-gradient(135deg, #FDBA74, #D97706); color: #451A03; }
-    .rank-pos.other { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
-
-    .rank-name { font-weight: 700; font-size: 0.96rem; line-height: 1.18; }
-    .rank-meta { color: var(--text-secondary); font-size: 0.78rem; margin-top: 0.22rem; }
-    .rank-score { font-weight: 800; font-size: 1.45rem; color: var(--brand-primary); font-variant-numeric: tabular-nums; }
-
-    .chart-container { position: relative; flex: 1; min-height: 360px; }
-
-    .performance-board { display: grid; gap: 1rem; padding-top: 0.3rem; }
-
-    .performance-summary {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
-      margin-bottom: 0.6rem;
-    }
-
-    .summary-tile {
-      padding: 0.78rem;
-      border: 1px solid rgba(180, 205, 255, 0.1);
-      border-radius: 14px;
-      background: rgba(255,255,255,0.035);
-    }
-
-    .summary-tile span {
-      display: block;
-      color: var(--text-secondary);
-      font-size: 0.68rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .summary-tile strong {
-      display: block;
-      margin-top: 0.32rem;
-      color: #F8FAFC;
-      font-size: 1.18rem;
-      font-weight: 800;
-    }
-
-    .performance-row {
-      display: grid;
-      grid-template-columns: minmax(150px, 0.72fr) minmax(180px, 1fr) 54px;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    .performance-name {
-      color: #EAF2FF;
-      font-weight: 800;
-      font-size: 0.88rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .performance-track {
-      height: 18px;
-      border-radius: 999px;
-      background: rgba(180, 205, 255, 0.08);
-      border: 1px solid rgba(180, 205, 255, 0.08);
-      overflow: hidden;
-      position: relative;
-    }
-
-    .performance-fill {
-      height: 100%;
-      width: var(--bar-width);
-      min-width: 18px;
-      border-radius: inherit;
-      background: linear-gradient(90deg, #2EC4B6, #3B82F6 62%, #7C5CFF);
-      box-shadow: 0 0 28px rgba(46, 196, 182, 0.28);
-    }
-
-    .performance-value {
-      color: #F8FAFC;
-      font-weight: 800;
-      font-size: 0.95rem;
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .empty-state { color: var(--text-secondary); text-align: center; padding: 3rem 0; }
-
-    .doughnut-panel { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-    .doughnut-wrap { position: relative; width: min(100%, 270px); aspect-ratio: 1; }
-
-    .doughnut-center {
-      position: absolute;
-      inset: 50% auto auto 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      pointer-events: none;
-    }
-
-    .doughnut-center strong { display: block; font-size: 2.05rem; line-height: 1; font-weight: 800; color: var(--text-primary); }
-    .doughnut-center span { display: block; color: var(--text-secondary); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; margin-top: 0.35rem; }
-
-    .distro-legend { width: 100%; display: grid; gap: 0.65rem; margin-top: 1.3rem; }
-
-    .legend-row {
-      display: grid;
-      grid-template-columns: 10px minmax(0, 1fr) auto;
-      align-items: center;
-      gap: 0.65rem;
-      color: var(--text-secondary);
-      font-size: 0.82rem;
-    }
-
-    .legend-dot { width: 10px; height: 10px; border-radius: 999px; }
-    .legend-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .legend-value { color: var(--text-primary); font-weight: 800; }
-
-    .activity-panel {
-      background: rgba(7, 12, 24, 0.72);
-      border-color: rgba(180, 205, 255, 0.11);
-    }
-
-    .table-wrapper {
-      overflow-x: auto;
-      max-height: 460px;
-      overflow-y: auto;
-      border-radius: 14px;
-      border: 1px solid rgba(180, 205, 255, 0.1);
-      background: rgba(5, 10, 20, 0.38);
-    }
-
-    .table-wrapper::-webkit-scrollbar { width: 6px; }
-    .table-wrapper::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-
-    table { width: 100%; border-collapse: separate; border-spacing: 0; }
-
-    th {
-      position: sticky;
-      top: 0;
-      background: rgba(9, 16, 30, 0.96);
-      z-index: 10;
-      text-align: left;
-      padding: 1rem 1.1rem;
-      font-size: 0.72rem;
-      font-weight: 800;
-      color: var(--text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      border-bottom: 1px solid rgba(180, 205, 255, 0.1);
-    }
-
-    td {
-      padding: 0.9rem 1.1rem;
-      font-size: 0.88rem;
-      border-bottom: 1px solid rgba(180, 205, 255, 0.08);
-      color: #DCE8F8;
-    }
-
-    tr:hover td { background: rgba(46, 196, 182, 0.045); }
-
-    .badge-mac {
-      background: rgba(59, 130, 246, 0.08);
-      color: #7DB4FF;
-      padding: 0.28rem 0.56rem;
-      border-radius: 999px;
-      font-family: monospace;
-      font-size: 0.8rem;
-      font-weight: 700;
-      border: 1px solid rgba(59, 130, 246, 0.16);
-    }
-
-    .badge-colab { display: flex; align-items: center; gap: 10px; font-weight: 700; }
-
-    .avatar-mini {
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--brand-purple), var(--brand-blue));
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 0.68rem;
-      font-weight: 800;
-      color: white;
-    }
-
-    .foto-btn {
-      background: rgba(255,255,255,0.035);
-      color: var(--text-primary);
-      text-decoration: none;
-      padding: 0.42rem 0.76rem;
-      border-radius: 999px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s;
-      border: 1px solid rgba(180, 205, 255, 0.12);
-    }
-
-    .foto-btn:hover { background: rgba(16, 185, 129, 0.1); color: var(--brand-success); border-color: var(--brand-success); }
-    .foto-btn.disabled { opacity: 0.4; cursor: not-allowed; }
-
-    #loading {
-      position: fixed;
-      inset: 0;
-      background: rgba(2, 6, 23, 0.9);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      backdrop-filter: blur(10px);
-    }
-
-    .spinner {
-      width: 60px;
-      height: 60px;
-      border: 4px solid rgba(59, 130, 246, 0.1);
-      border-top-color: var(--brand-primary);
-      border-radius: 50%;
-      animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
-    }
-
-    #loading span {
-      margin-top: 1.5rem;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .hidden { display: none !important; }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ranking de Produtividade - Brasil Digital</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --bg-base: #050812;
+            --bg-surface: rgba(11, 18, 32, 0.78);
+            --bg-surface-strong: rgba(14, 24, 43, 0.92);
+            --bg-surface-hover: rgba(30, 41, 59, 0.8);
+            --border-subtle: rgba(180, 205, 255, 0.14);
+            --text-primary: #F8FAFC;
+            --text-secondary: #9DB0CA;
+            --brand-primary: #2EC4B6;
+            --brand-success: #18C964;
+            --brand-warning: #F8B84E;
+            --brand-purple: #7C5CFF;
+            --brand-blue: #3B82F6;
+            --glass-bg: rgba(9, 16, 30, 0.72);
+            --glass-blur: blur(18px);
+            --shadow-panel: 0 24px 80px rgba(0, 0, 0, 0.34);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            min-width: 0;
+            overflow-x: hidden;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            background-image:
+                linear-gradient(140deg, rgba(46, 196, 182, 0.24) 0%, transparent 30%),
+                radial-gradient(ellipse at 16% 8%, rgba(59, 130, 246, 0.34) 0%, transparent 34%),
+                radial-gradient(ellipse at 82% 18%, rgba(124, 92, 255, 0.28) 0%, transparent 36%),
+                radial-gradient(ellipse at 48% 52%, rgba(24, 201, 100, 0.14) 0%, transparent 34%),
+                linear-gradient(180deg, #071525 0%, #050812 42%, #070816 100%);
+            background-size: 140% 140%, 130% 130%, 130% 130%, 120% 120%, 100% 100%;
+            background-attachment: fixed;
+            animation: backgroundDrift 16s ease-in-out infinite alternate;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.028) 1px, transparent 1px),
+                linear-gradient(115deg, transparent 0 44%, rgba(46, 196, 182, 0.08) 45%, transparent 52%);
+            background-size: 64px 64px, 64px 64px, 100% 100%;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.25));
+            animation: gridFloat 22s linear infinite;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: -24%;
+            pointer-events: none;
+            background:
+                conic-gradient(from 140deg at 22% 34%, transparent 0 18%, rgba(46, 196, 182, 0.18) 28%, transparent 40% 100%),
+                conic-gradient(from 260deg at 78% 58%, transparent 0 12%, rgba(59, 130, 246, 0.16) 24%, rgba(124, 92, 255, 0.12) 34%, transparent 48% 100%);
+            filter: blur(42px);
+            opacity: 0.9;
+            animation: auraMove 18s ease-in-out infinite alternate;
+        }
+
+        @keyframes backgroundDrift {
+            0% {
+                background-position: 0% 0%, 8% 4%, 92% 8%, 44% 50%, 0 0;
+            }
+
+            100% {
+                background-position: 20% 16%, 2% 16%, 78% 28%, 56% 42%, 0 0;
+            }
+        }
+
+        @keyframes gridFloat {
+            to {
+                background-position: 64px 64px, 64px 64px, 0 0;
+            }
+        }
+
+        @keyframes auraMove {
+            0% {
+                transform: translate3d(-2%, -1%, 0) rotate(0deg) scale(1);
+            }
+
+            100% {
+                transform: translate3d(3%, 2%, 0) rotate(7deg) scale(1.04);
+            }
+        }
+
+        .wrapper {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 2rem clamp(1rem, 4vw, 4rem);
+            max-width: 1500px;
+            margin: 0 auto;
+            gap: 1.5rem;
+            position: relative;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-subtle);
+            border-radius: 22px;
+            box-shadow: var(--shadow-panel);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .header-logo-card {
+            width: 44px;
+            height: 44px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .header-logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .header-title h1 {
+            font-size: clamp(1.15rem, 3vw, 1.8rem);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            line-height: 1.15;
+            background: linear-gradient(90deg, #fff, #CBD5E1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-subtitle-inline {
+            color: #3B82F6;
+            font-size: clamp(0.75rem, 2vw, 0.95rem);
+            letter-spacing: 1px;
+            font-weight: 800;
+            display: inline-block;
+            margin-top: 2px;
+        }
+
+        .btn-sync {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-blue));
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 12px 28px rgba(46, 196, 182, 0.22);
+        }
+
+        .btn-sync:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 16px 34px rgba(46, 196, 182, 0.3);
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .kpi-card {
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018)),
+                radial-gradient(circle at 86% 20%, color-mix(in srgb, var(--accent-color) 26%, transparent), transparent 28%),
+                rgba(8, 15, 29, 0.82);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-subtle);
+            border-radius: 18px;
+            padding: 1.25rem;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            grid-template-rows: auto 1fr auto;
+            gap: 0.85rem 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            min-height: 150px;
+            box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            border-color: color-mix(in srgb, var(--accent-color) 70%, white);
+            box-shadow: 0 22px 58px rgba(0, 0, 0, 0.36);
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 4px;
+            background: linear-gradient(180deg, var(--accent-color, var(--brand-primary)), transparent 86%);
+        }
+
+        .kpi-card::after {
+            content: '';
+            position: absolute;
+            right: 1.1rem;
+            bottom: 1rem;
+            width: 96px;
+            height: 34px;
+            opacity: 0.18;
+            background: linear-gradient(135deg, transparent 10%, var(--accent-color) 11% 14%, transparent 15% 34%, var(--accent-color) 35% 38%, transparent 39% 58%, var(--accent-color) 59% 62%, transparent 63%);
+            clip-path: polygon(0 78%, 18% 52%, 34% 62%, 50% 28%, 68% 42%, 88% 10%, 100% 18%, 100% 100%, 0 100%);
+        }
+
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            grid-column: 1;
+        }
+
+        .kpi-title {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3rem;
+            grid-column: 2;
+            grid-row: 1 / span 2;
+        }
+
+        .kpi-value {
+            grid-column: 1;
+            font-size: clamp(2.35rem, 4vw, 3.15rem);
+            font-weight: 800;
+            line-height: 0.95;
+            margin: 0;
+            letter-spacing: -0.03em;
+        }
+
+        .kpi-trend {
+            grid-column: 1 / -1;
+            font-size: 0.82rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            width: fit-content;
+            padding: 0.38rem 0.62rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .kpi-card.blue {
+            --accent-color: var(--brand-primary);
+        }
+
+        .kpi-card.green {
+            --accent-color: var(--brand-success);
+        }
+
+        .kpi-card.purple {
+            --accent-color: var(--brand-purple);
+        }
+
+        .kpi-card.orange {
+            --accent-color: var(--brand-warning);
+        }
+
+        .kpi-card.blue .kpi-icon {
+            background: rgba(46, 196, 182, 0.15);
+            color: var(--brand-primary);
+        }
+
+        .kpi-card.green .kpi-icon {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--brand-success);
+        }
+
+        .kpi-card.purple .kpi-icon {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--brand-purple);
+        }
+
+        .kpi-card.orange .kpi-icon {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--brand-warning);
+        }
+
+        .control-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass-bg);
+            backdrop-filter: var(--glass-blur);
+            padding: 1rem 1.6rem;
+            border-radius: 20px;
+            border: 1px solid var(--border-subtle);
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            box-shadow: var(--shadow-panel);
+        }
+
+        .controls-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .control-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .select-filter,
+        .date-filter {
+            background: rgba(15, 23, 42, 0.8);
+            color: var(--text-primary);
+            border: 1px solid var(--border-subtle);
+            padding: 0.7rem 1.2rem;
+            border-radius: 12px;
+            font-family: 'Outfit';
+            font-size: 0.95rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .select-filter:hover,
+        .date-filter:hover {
+            border-color: var(--brand-primary);
+            background: rgba(30, 41, 59, 0.9);
+        }
+
+        .date-filter {
+            display: none;
+        }
+
+        .metric-toggle {
+            display: flex;
+            background: rgba(15, 23, 42, 0.8);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .toggle-btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--brand-primary), var(--brand-blue));
+            color: white;
+            box-shadow: 0 8px 18px rgba(46, 196, 182, 0.22);
+        }
+
+        .insights-grid {
+            display: grid;
+            grid-template-columns: minmax(280px, 0.9fr) minmax(460px, 1.65fr) minmax(260px, 0.86fr);
+            gap: 1.5rem;
+            align-items: stretch;
+        }
+
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 1280px) {
+            .insights-grid {
+                grid-template-columns: 1fr 1.35fr;
+            }
+
+            .doughnut-panel {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .performance-row {
+                grid-template-columns: 1fr;
+                gap: 0.45rem;
+            }
+
+            .performance-value {
+                text-align: left;
+            }
+        }
+
+        .panel {
+            background: linear-gradient(180deg, var(--bg-surface-strong), rgba(8, 13, 26, 0.86));
+            border: 1px solid var(--border-subtle);
+            border-radius: 22px;
+            padding: 1.55rem;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: var(--glass-blur);
+            box-shadow: var(--shadow-panel);
+            min-width: 0;
+        }
+
+        .panel-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 1.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            color: var(--text-primary);
+        }
+
+        .panel-title span {
+            white-space: nowrap;
+        }
+
+        .period-chip {
+            color: var(--text-secondary);
+            font-size: 0.76rem;
+            font-weight: 700;
+            padding: 0.24rem 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-subtle);
+            border-radius: 999px;
+        }
+
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .ranking-item {
+            display: grid;
+            grid-template-columns: 42px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.95rem;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .ranking-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-subtle);
+            transform: scale(1.02);
+        }
+
+        .rank-pos {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .rank-pos.gold {
+            background: linear-gradient(135deg, #FDE047, #F59E0B);
+            color: #451A03;
+        }
+
+        .rank-pos.silver {
+            background: linear-gradient(135deg, #E2E8F0, #94A3B8);
+            color: #0F172A;
+        }
+
+        .rank-pos.bronze {
+            background: linear-gradient(135deg, #FDBA74, #D97706);
+            color: #451A03;
+        }
+
+        .rank-pos.other {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+        }
+
+        .rank-name {
+            font-weight: 700;
+            font-size: 0.96rem;
+            line-height: 1.18;
+        }
+
+        .rank-meta {
+            color: var(--text-secondary);
+            font-size: 0.78rem;
+            margin-top: 0.22rem;
+        }
+
+        .rank-score {
+            font-weight: 800;
+            font-size: 1.45rem;
+            color: var(--brand-primary);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .chart-container {
+            position: relative;
+            flex: 1;
+            min-height: 360px;
+        }
+
+        .performance-board {
+            display: grid;
+            gap: 1rem;
+            padding-top: 0.3rem;
+        }
+
+        .performance-summary {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 0.75rem;
+            margin-bottom: 0.6rem;
+        }
+
+        .summary-tile {
+            padding: 0.78rem;
+            border: 1px solid rgba(180, 205, 255, 0.1);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.035);
+        }
+
+        .summary-tile span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.68rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .summary-tile strong {
+            display: block;
+            margin-top: 0.32rem;
+            color: #F8FAFC;
+            font-size: 1.18rem;
+            font-weight: 800;
+        }
+
+        .performance-row {
+            display: grid;
+            grid-template-columns: minmax(150px, 0.72fr) minmax(180px, 1fr) 54px;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .performance-name {
+            color: #EAF2FF;
+            font-weight: 800;
+            font-size: 0.88rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .performance-track {
+            height: 18px;
+            border-radius: 999px;
+            background: rgba(180, 205, 255, 0.08);
+            border: 1px solid rgba(180, 205, 255, 0.08);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .performance-fill {
+            height: 100%;
+            width: var(--bar-width);
+            min-width: 18px;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #2EC4B6, #3B82F6 62%, #7C5CFF);
+            box-shadow: 0 0 28px rgba(46, 196, 182, 0.28);
+        }
+
+        .performance-value {
+            color: #F8FAFC;
+            font-weight: 800;
+            font-size: 0.95rem;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .empty-state {
+            color: var(--text-secondary);
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .doughnut-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .doughnut-wrap {
+            position: relative;
+            width: min(100%, 270px);
+            aspect-ratio: 1;
+        }
+
+        .doughnut-center {
+            position: absolute;
+            inset: 50% auto auto 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .doughnut-center strong {
+            display: block;
+            font-size: 2.05rem;
+            line-height: 1;
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .doughnut-center span {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-top: 0.35rem;
+        }
+
+        .distro-legend {
+            width: 100%;
+            display: grid;
+            gap: 0.65rem;
+            margin-top: 1.3rem;
+        }
+
+        .legend-row {
+            display: grid;
+            grid-template-columns: 10px minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 0.65rem;
+            color: var(--text-secondary);
+            font-size: 0.82rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+        }
+
+        .legend-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .legend-value {
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .activity-panel {
+            background: rgba(7, 12, 24, 0.72);
+            border-color: rgba(180, 205, 255, 0.11);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            max-height: 460px;
+            overflow-y: auto;
+            border-radius: 14px;
+            border: 1px solid rgba(180, 205, 255, 0.1);
+            background: rgba(5, 10, 20, 0.38);
+        }
+
+        .table-wrapper::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background: rgba(9, 16, 30, 0.96);
+            z-index: 10;
+            text-align: left;
+            padding: 1rem 1.1rem;
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(180, 205, 255, 0.1);
+        }
+
+        td {
+            padding: 0.9rem 1.1rem;
+            font-size: 0.88rem;
+            border-bottom: 1px solid rgba(180, 205, 255, 0.08);
+            color: #DCE8F8;
+        }
+
+        tr:hover td {
+            background: rgba(46, 196, 182, 0.045);
+        }
+
+        .badge-mac {
+            background: rgba(59, 130, 246, 0.08);
+            color: #7DB4FF;
+            padding: 0.28rem 0.56rem;
+            border-radius: 999px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            font-weight: 700;
+            border: 1px solid rgba(59, 130, 246, 0.16);
+        }
+
+        .badge-colab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+
+        .avatar-mini {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--brand-purple), var(--brand-blue));
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .foto-btn {
+            background: rgba(255, 255, 255, 0.035);
+            color: var(--text-primary);
+            text-decoration: none;
+            padding: 0.42rem 0.76rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            border: 1px solid rgba(180, 205, 255, 0.12);
+        }
+
+        .foto-btn:hover {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--brand-success);
+            border-color: var(--brand-success);
+        }
+
+        .foto-btn.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            position: fixed;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-top-color: var(--brand-primary);
+            border-radius: 50%;
+            animation: spin 1s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+        }
+
+        #loading span {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
 </head>
+
 <body>
-  <div id="loading">
-    <div class="spinner"></div>
-    <span>Sincronizando...</span>
-  </div>
+    <div id="loading">
+        <div class="spinner"></div>
+        <span>Sincronizando...</span>
+    </div>
 
-  <div class="wrapper">
-    <header>
-      <div class="header-info">
-        <h1>Painel Executivo Premium</h1>
-        <p id="header-subtitle">Inteligência Operacional de Campo</p>
-      </div>
-      <button class="btn-sync" onclick="carregarDados()">
-        <i class="fa-solid fa-arrows-rotate"></i> Atualizar Dados
-      </button>
-    </header>
+    <div class="wrapper">
+        <header>
+            <div class="header-left">
+                <div class="header-logo-card">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAQCAMAAABa4m3lAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAAAwFBMVEWdp6dokaIvjmWaoKVnm5qRoKWiqK3T5epgjZtJnHax0c+hqdMAcTtDl3R0nqw5a4l/f3+dyLd/f/+dtsQAcXFbY6qfzrJLeJRHc5Ct0sU6cJB////K49u318sA//+byLf/f/8AAH8AAP9mzJmNw69SoXw9lHBmmWYAAAArZYf+/v4SglICeURLeJRVqqobV3scXIE2aYZId5MjXH2SxrFEdZE/f3+XtseMpraamZxxlatpqo+0x9FymKsiXoGuxc+/DBI0AAAAAXRSTlMAQObYZgAAAb9JREFUeNqFkgmPmzAQhX1wBBIg53bv7d2ZMQ7XAgmQ5P//q443WrVVVfXJsmzp85tnzYgHiF9qrOyBYAn/kYhh9RWLokSPgAD2Xdft6S+M9hQ8g+DD40oIbYuWtu8U/cM51MqwVOTXEjo6DMPAiYj2a7ZzNZZdl36Mb2hDIHw/f9MiT3ygAJ1a6tjnkzNbfn7zVEqiALHxk8hjJflCPcFwrm5vKzwBHXoIXQ24DMMpHD1Znjgz0SMHUfJFLRSlaIkkzuY11huuUfe9K+VZlOUMRMC5TW5Mru5ys9phgbwmLK3EwmZlKwsr5VQ1noMhpVejnsRooiiP5ojWYiOLFmb4AcBBWLVThQxvBeyBYc72PfEcnAHIwmNwhhaowkm2bVnX/MhlvsJffoyeyb/Nz02WNWdZZnDBsqqKRlvrNVgXskD5y/lOLczN/P7M/5HTvQQ4tO5vEvGMJ4uhxfodjkdmR6BLGqQXoD50TexjiqlP+xDCC8AUXmGjTJ6bkbbPv/VWHwWPQSDE8cjrwINxhReMRq8Oeditdzx96yVoEfi+5g4HWvDu6zhw8CpJ5Cz8c2YCdtZaHPVRzwW7B3zTPwHH11vdEUNqCgAAAABJRU5ErkJggg==" alt="Brasil Digital" class="header-logo">
+                </div>
+                <div class="header-title">
+                    <h1>RANKING DE PRODUTIVIDADE<br><span class="header-subtitle-inline">BRASIL DIGITAL</span></h1>
+                </div>
+            </div>
+            <button class="btn-sync" onclick="carregarDados()">
+                <i class="fa-solid fa-arrows-rotate"></i> Atualizar Dados
+            </button>
+        </header>
 
-    <section class="kpi-grid">
-      <div class="kpi-card blue">
-        <div class="kpi-header">
-          <span class="kpi-title" id="kpi-title-hoje">Hoje (MACs)</span>
-          <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
-        </div>
-        <div class="kpi-value" id="stat-hoje">0</div>
-        <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas 24h</div>
-      </div>
+        <section class="kpi-grid">
+            <div class="kpi-card blue">
+                <div class="kpi-header">
+                    <span class="kpi-title" id="kpi-title-hoje">Hoje (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
+                </div>
+                <div class="kpi-value" id="stat-hoje">0</div>
+                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas
+                    24h</div>
+            </div>
 
-      <div class="kpi-card green">
-        <div class="kpi-header">
-          <span class="kpi-title" id="kpi-title-semana">Semana (MACs)</span>
-          <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
-        </div>
-        <div class="kpi-value" id="stat-semana">0</div>
-        <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i> Últimos 7 dias</div>
-      </div>
+            <div class="kpi-card green">
+                <div class="kpi-header">
+                    <span class="kpi-title" id="kpi-title-semana">Semana (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+                <div class="kpi-value" id="stat-semana">0</div>
+                <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i>
+                    Últimos 7 dias</div>
+            </div>
 
-      <div class="kpi-card purple">
-        <div class="kpi-header">
-          <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
-          <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
-        </div>
-        <div class="kpi-value" id="stat-mes">0</div>
-        <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês Atual</div>
-      </div>
+            <div class="kpi-card purple">
+                <div class="kpi-header">
+                    <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                </div>
+                <div class="kpi-value" id="stat-mes">0</div>
+                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês
+                    Atual</div>
+            </div>
 
-      <div class="kpi-card orange">
-        <div class="kpi-header">
-          <span class="kpi-title" id="kpi-title-total">Total (MACs)</span>
-          <div class="kpi-icon"><i class="fa-solid fa-earth-americas"></i></div>
-        </div>
-        <div class="kpi-value" id="stat-total">0</div>
-        <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o histórico</div>
-      </div>
-    </section>
+            <div class="kpi-card orange">
+                <div class="kpi-header">
+                    <span class="kpi-title" id="kpi-title-total">Total (MACs)</span>
+                    <div class="kpi-icon"><i class="fa-solid fa-earth-americas"></i></div>
+                </div>
+                <div class="kpi-value" id="stat-total">0</div>
+                <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o
+                    histórico</div>
+            </div>
+        </section>
 
-    <section class="control-bar">
-      <div class="controls-group">
-        <span class="control-label">Métrica:</span>
-        <div class="metric-toggle">
-          <button class="toggle-btn active" onclick="setMetrica('mac')" id="btn-mac">MACs</button>
-          <button class="toggle-btn" onclick="setMetrica('cto')" id="btn-cto">CTOs</button>
-        </div>
-      </div>
+        <section class="control-bar">
+            <div class="controls-group">
+                <span class="control-label">Métrica:</span>
+                <div class="metric-toggle">
+                    <button class="toggle-btn active" onclick="setMetrica('mac')" id="btn-mac">MACs</button>
+                    <button class="toggle-btn" onclick="setMetrica('cto')" id="btn-cto">CTOs</button>
+                </div>
+            </div>
 
-      <div class="controls-group">
-        <span class="control-label">Período:</span>
-        <select id="periodo-filtro" class="select-filter" onchange="toggleDataEspecifica()">
-          <option value="hoje">Hoje</option>
-          <option value="semana">Últimos 7 Dias</option>
-          <option value="mes" selected>Este Mês</option>
-          <option value="ano">Este Ano</option>
-          <option value="total">Tudo</option>
-          <option value="data">Data Específica</option>
-        </select>
-        <input type="date" id="data-especifica" class="date-filter" onchange="aplicarFiltros()">
-      </div>
-    </section>
+            <div class="controls-group">
+                <span class="control-label">Período:</span>
+                <select id="periodo-filtro" class="select-filter" onchange="toggleDataEspecifica()">
+                    <option value="hoje">Hoje</option>
+                    <option value="semana">Últimos 7 Dias</option>
+                    <option value="mes" selected>Este Mês</option>
+                    <option value="ano">Este Ano</option>
+                    <option value="total">Tudo</option>
+                    <option value="data">Data Específica</option>
+                </select>
+                <input type="date" id="data-especifica" class="date-filter" onchange="aplicarFiltros()">
+            </div>
+        </section>
 
-    <section class="insights-grid">
-      <div class="panel ranking-panel">
-        <h2 class="panel-title" id="titulo-ranking"><i class="fa-solid fa-trophy" style="color: var(--brand-warning)"></i> <span>Líderes do Período</span></h2>
-        <div class="ranking-list" id="ranking-list-container"></div>
-      </div>
+        <section class="insights-grid">
+            <div class="panel ranking-panel">
+                <h2 class="panel-title" id="titulo-ranking"><i class="fa-solid fa-trophy"
+                        style="color: var(--brand-warning)"></i> <span>Líderes do Período</span></h2>
+                <div class="ranking-list" id="ranking-list-container"></div>
+            </div>
 
-      <div class="panel">
-        <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-bar" style="color: var(--brand-primary)"></i> Ranking de Performance</h2>
-        <div class="chart-container">
-          <div class="performance-board" id="performanceChart"></div>
-        </div>
-      </div>
+            <div class="panel">
+                <h2 class="panel-title" id="titulo-grafico"><i class="fa-solid fa-chart-bar"
+                        style="color: var(--brand-primary)"></i> Ranking de Performance</h2>
+                <div class="chart-container">
+                    <div class="performance-board" id="performanceChart"></div>
+                </div>
+            </div>
 
-      <div class="panel doughnut-panel">
-        <h2 class="panel-title"><i class="fa-solid fa-chart-pie" style="color: var(--brand-purple)"></i> Distribuição de Equipe</h2>
-        <div class="doughnut-wrap">
-          <canvas id="distroChart"></canvas>
-          <div class="doughnut-center">
-            <strong id="distro-total">0</strong>
-            <span id="distro-label">MACs</span>
-          </div>
-        </div>
-        <div class="distro-legend" id="distro-legend"></div>
-      </div>
-    </section>
+            <div class="panel doughnut-panel">
+                <h2 class="panel-title"><i class="fa-solid fa-chart-pie" style="color: var(--brand-purple)"></i>
+                    Distribuição de Equipe</h2>
+                <div class="doughnut-wrap">
+                    <canvas id="distroChart"></canvas>
+                    <div class="doughnut-center">
+                        <strong id="distro-total">0</strong>
+                        <span id="distro-label">MACs</span>
+                    </div>
+                </div>
+                <div class="distro-legend" id="distro-legend"></div>
+            </div>
+        </section>
 
-    <section class="activity-grid">
-      <div class="panel activity-panel">
-        <h2 class="panel-title" id="titulo-tabela"><i class="fa-solid fa-timeline" style="color: var(--brand-success)"></i> Log de Atividades</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Horário</th>
-                <th>Técnico</th>
-                <th>MAC</th>
-                <th>CTO</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabela-logs"></tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-  </div>
+        <section class="activity-grid">
+            <div class="panel activity-panel">
+                <h2 class="panel-title" id="titulo-tabela"><i class="fa-solid fa-timeline"
+                        style="color: var(--brand-success)"></i> Log de Atividades</h2>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                <th>Técnico</th>
+                                <th>MAC</th>
+                                <th>CTO</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabela-logs"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
 
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6tdT0URlgf4ES50MHQnAwlpgJDzp8w4mF8I2qUA5s71Y1J984dnDn3SKa_HcHhBlT/exec";
-    let distroChartInstance = null;
-    window.todosLogs = [];
-    let metricaAtual = 'mac';
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6tdT0URlgf4ES50MHQnAwlpgJDzp8w4mF8I2qUA5s71Y1J984dnDn3SKa_HcHhBlT/exec";
+        let distroChartInstance = null;
+        window.todosLogs = [];
+        let metricaAtual = 'mac';
 
-    document.addEventListener('DOMContentLoaded', carregarDados);
+        document.addEventListener('DOMContentLoaded', carregarDados);
 
-    function setMetrica(metrica) {
-      metricaAtual = metrica;
-      document.getElementById('btn-mac').classList.toggle('active', metrica === 'mac');
-      document.getElementById('btn-cto').classList.toggle('active', metrica === 'cto');
+        function setMetrica(metrica) {
+            metricaAtual = metrica;
+            document.getElementById('btn-mac').classList.toggle('active', metrica === 'mac');
+            document.getElementById('btn-cto').classList.toggle('active', metrica === 'cto');
 
-      const suffix = metrica === 'mac' ? '(MACs)' : '(CTOs)';
-      document.getElementById('kpi-title-hoje').innerText = `Hoje ${suffix}`;
-      document.getElementById('kpi-title-semana').innerText = `Semana ${suffix}`;
-      document.getElementById('kpi-title-mes').innerText = `Este Mês ${suffix}`;
-      document.getElementById('kpi-title-total').innerText = `Total ${suffix}`;
+            const suffix = metrica === 'mac' ? '(MACs)' : '(CTOs)';
+            document.getElementById('kpi-title-hoje').innerText = `Hoje ${suffix}`;
+            document.getElementById('kpi-title-semana').innerText = `Semana ${suffix}`;
+            document.getElementById('kpi-title-mes').innerText = `Este Mês ${suffix}`;
+            document.getElementById('kpi-title-total').innerText = `Total ${suffix}`;
 
-      processarKPIsGlobais();
-      aplicarFiltros();
-    }
-
-    function toggleDataEspecifica() {
-      const periodo = document.getElementById('periodo-filtro').value;
-      const dateInput = document.getElementById('data-especifica');
-      dateInput.style.display = (periodo === 'data') ? 'block' : 'none';
-      aplicarFiltros();
-    }
-
-    async function carregarDados() {
-      document.getElementById('loading').classList.remove('hidden');
-      try {
-        const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
-        const json = await res.json();
-        if (json.status === "success") {
-          window.todosLogs = json.data;
-          processarKPIsGlobais();
-          aplicarFiltros();
-        } else {
-          alert("Erro: " + json.message);
-        }
-      } catch (err) {
-        console.error(err);
-        alert("Falha ao sincronizar com o banco de dados.");
-      }
-      document.getElementById('loading').classList.add('hidden');
-    }
-
-    function parseDateString(dateStr) {
-      if (!dateStr) return new Date(NaN);
-      if (dateStr.includes('/')) {
-        const parts = dateStr.split(' ');
-        const datePart = parts[0];
-        const timePart = parts[1] || '00:00:00';
-        const [d, m, y] = datePart.split('/');
-        return new Date(`${y}-${m}-${d}T${timePart}`);
-      }
-      return new Date(dateStr);
-    }
-
-    function formatDataBR(dateObj) {
-      if (isNaN(dateObj.getTime())) return "Data Inválida";
-      const d = String(dateObj.getDate()).padStart(2, '0');
-      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-      const y = dateObj.getFullYear();
-      const h = String(dateObj.getHours()).padStart(2, '0');
-      const min = String(dateObj.getMinutes()).padStart(2, '0');
-      return `${d}/${m}/${y} ${h}:${min}`;
-    }
-
-    function getInitials(name = '') {
-      const safeName = String(name || 'NA').trim();
-      const parts = safeName.split(' ');
-      if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
-      return safeName.substring(0, 2).toUpperCase();
-    }
-
-    function processarKPIsGlobais() {
-      const hoje = new Date();
-      const counts = { hoje: 0, semana: 0, mes: 0, total: 0 };
-      const uniqueCTOs = { hoje: new Set(), semana: new Set(), mes: new Set(), total: new Set() };
-
-      window.todosLogs.forEach(log => {
-        const dataLog = parseDateString(log.dataHora);
-        if (isNaN(dataLog.getTime())) return;
-
-        const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
-        const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-        const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
-
-        const checkAdd = (key) => {
-          if (metricaAtual === 'mac') counts[key]++;
-          else uniqueCTOs[key].add(`${log.colaborador}|${log.cto}`);
-        };
-
-        checkAdd('total');
-        if (diffDays === 0) checkAdd('hoje');
-        if (diffDays <= 7) checkAdd('semana');
-        if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) checkAdd('mes');
-      });
-
-      const getFinalValue = (key) => metricaAtual === 'mac' ? counts[key] : uniqueCTOs[key].size;
-
-      document.getElementById('stat-hoje').innerText = getFinalValue('hoje');
-      document.getElementById('stat-semana').innerText = getFinalValue('semana');
-      document.getElementById('stat-mes').innerText = getFinalValue('mes');
-      document.getElementById('stat-total').innerText = getFinalValue('total');
-    }
-
-    function aplicarFiltros() {
-      const periodo = document.getElementById('periodo-filtro').value;
-      const hoje = new Date();
-      const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
-
-      let logsFiltrados = [];
-      const contagemColabRaw = {};
-
-      let labelPeriodo = "";
-      if (periodo === 'hoje') labelPeriodo = "Hoje";
-      else if (periodo === 'semana') labelPeriodo = "7 Dias";
-      else if (periodo === 'mes') labelPeriodo = "Este Mês";
-      else if (periodo === 'ano') labelPeriodo = "Este Ano";
-      else if (periodo === 'total') labelPeriodo = "Total";
-      else if (periodo === 'data') {
-        const dataVal = document.getElementById('data-especifica').value;
-        if (dataVal) {
-          const [y, m, d] = dataVal.split('-');
-          labelPeriodo = `${d}/${m}/${y}`;
-        } else labelPeriodo = "Data Selecionada";
-      }
-
-      const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
-      document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-bar" style="color: var(--brand-primary)"></i> <span>Ranking de ${metricLabel}</span> <span class="period-chip">${labelPeriodo}</span>`;
-
-      window.todosLogs.forEach(log => {
-        const dataLog = parseDateString(log.dataHora);
-        if (isNaN(dataLog.getTime())) return;
-
-        const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
-        const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
-
-        let incluir = false;
-        if (periodo === 'hoje' && diffDays === 0) incluir = true;
-        else if (periodo === 'semana' && diffDays <= 7) incluir = true;
-        else if (periodo === 'mes' && dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
-        else if (periodo === 'ano' && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
-        else if (periodo === 'total') incluir = true;
-        else if (periodo === 'data') {
-          const dataVal = document.getElementById('data-especifica').value;
-          if (dataVal) {
-            const [y, m, d] = dataVal.split('-');
-            if (dataLog.getFullYear() == y && dataLog.getMonth() == (m - 1) && dataLog.getDate() == d) incluir = true;
-          }
+            processarKPIsGlobais();
+            aplicarFiltros();
         }
 
-        if (incluir) {
-          logsFiltrados.push(log);
-          const colab = log.colaborador || "Desconhecido";
-          if (metricaAtual === 'mac') {
-            contagemColabRaw[colab] = (contagemColabRaw[colab] || 0) + 1;
-          } else {
-            if (!contagemColabRaw[colab]) contagemColabRaw[colab] = new Set();
-            contagemColabRaw[colab].add(log.cto);
-          }
+        function toggleDataEspecifica() {
+            const periodo = document.getElementById('periodo-filtro').value;
+            const dateInput = document.getElementById('data-especifica');
+            dateInput.style.display = (periodo === 'data') ? 'block' : 'none';
+            aplicarFiltros();
         }
-      });
 
-      const finalCount = {};
-      for (const c in contagemColabRaw) {
-        finalCount[c] = metricaAtual === 'mac' ? contagemColabRaw[c] : contagemColabRaw[c].size;
-      }
+        async function carregarDados() {
+            document.getElementById('loading').classList.remove('hidden');
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
+                const json = await res.json();
+                if (json.status === "success") {
+                    window.todosLogs = json.data;
+                    processarKPIsGlobais();
+                    aplicarFiltros();
+                } else {
+                    alert("Erro: " + json.message);
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Falha ao sincronizar com o banco de dados.");
+            }
+            document.getElementById('loading').classList.add('hidden');
+        }
 
-      renderizarTopRanking(finalCount);
-      renderizarGraficos(finalCount);
-      renderizarTabela(logsFiltrados);
-    }
+        function parseDateString(dateStr) {
+            if (!dateStr) return new Date(NaN);
+            if (dateStr.includes('/')) {
+                const parts = dateStr.split(' ');
+                const datePart = parts[0];
+                const timePart = parts[1] || '00:00:00';
+                const [d, m, y] = datePart.split('/');
+                return new Date(`${y}-${m}-${d}T${timePart}`);
+            }
+            return new Date(dateStr);
+        }
 
-    function renderizarTopRanking(contagem) {
-      const container = document.getElementById('ranking-list-container');
-      container.innerHTML = '';
-      const arrayRank = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+        function formatDataBR(dateObj) {
+            if (isNaN(dateObj.getTime())) return "Data Inválida";
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const y = dateObj.getFullYear();
+            const h = String(dateObj.getHours()).padStart(2, '0');
+            const min = String(dateObj.getMinutes()).padStart(2, '0');
+            return `${d}/${m}/${y} ${h}:${min}`;
+        }
 
-      if (arrayRank.length === 0) {
-        container.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding: 2rem 0;">Sem dados.</p>';
-        return;
-      }
+        function getInitials(name = '') {
+            const safeName = String(name || 'NA').trim();
+            const parts = safeName.split(' ');
+            if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+            return safeName.substring(0, 2).toUpperCase();
+        }
 
-      const badges = ['gold', 'silver', 'bronze'];
-      arrayRank.slice(0, 5).forEach((item, index) => {
-        const [nome, score] = item;
-        const badge = index < 3 ? badges[index] : 'other';
-        container.innerHTML += `
+        function processarKPIsGlobais() {
+            const hoje = new Date();
+            const counts = { hoje: 0, semana: 0, mes: 0, total: 0 };
+            const uniqueCTOs = { hoje: new Set(), semana: new Set(), mes: new Set(), total: new Set() };
+
+            window.todosLogs.forEach(log => {
+                const dataLog = parseDateString(log.dataHora);
+                if (isNaN(dataLog.getTime())) return;
+
+                const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
+                const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+                const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
+
+                const checkAdd = (key) => {
+                    if (metricaAtual === 'mac') counts[key]++;
+                    else uniqueCTOs[key].add(`${log.colaborador}|${log.cto}`);
+                };
+
+                checkAdd('total');
+                if (diffDays === 0) checkAdd('hoje');
+                if (diffDays <= 7) checkAdd('semana');
+                if (dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) checkAdd('mes');
+            });
+
+            const getFinalValue = (key) => metricaAtual === 'mac' ? counts[key] : uniqueCTOs[key].size;
+
+            document.getElementById('stat-hoje').innerText = getFinalValue('hoje');
+            document.getElementById('stat-semana').innerText = getFinalValue('semana');
+            document.getElementById('stat-mes').innerText = getFinalValue('mes');
+            document.getElementById('stat-total').innerText = getFinalValue('total');
+        }
+
+        function aplicarFiltros() {
+            const periodo = document.getElementById('periodo-filtro').value;
+            const hoje = new Date();
+            const dateOnlyHoje = new Date(hoje.getFullYear(), hoje.getMonth(), hoje.getDate());
+
+            let logsFiltrados = [];
+            const contagemColabRaw = {};
+
+            let labelPeriodo = "";
+            if (periodo === 'hoje') labelPeriodo = "Hoje";
+            else if (periodo === 'semana') labelPeriodo = "7 Dias";
+            else if (periodo === 'mes') labelPeriodo = "Este Mês";
+            else if (periodo === 'ano') labelPeriodo = "Este Ano";
+            else if (periodo === 'total') labelPeriodo = "Total";
+            else if (periodo === 'data') {
+                const dataVal = document.getElementById('data-especifica').value;
+                if (dataVal) {
+                    const [y, m, d] = dataVal.split('-');
+                    labelPeriodo = `${d}/${m}/${y}`;
+                } else labelPeriodo = "Data Selecionada";
+            }
+
+            const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
+            document.getElementById('titulo-grafico').innerHTML = `<i class="fa-solid fa-chart-bar" style="color: var(--brand-primary)"></i> <span>Ranking de ${metricLabel}</span> <span class="period-chip">${labelPeriodo}</span>`;
+
+            window.todosLogs.forEach(log => {
+                const dataLog = parseDateString(log.dataHora);
+                if (isNaN(dataLog.getTime())) return;
+
+                const dateOnlyLog = new Date(dataLog.getFullYear(), dataLog.getMonth(), dataLog.getDate());
+                const diffDays = Math.round((dateOnlyHoje - dateOnlyLog) / (1000 * 60 * 60 * 24));
+
+                let incluir = false;
+                if (periodo === 'hoje' && diffDays === 0) incluir = true;
+                else if (periodo === 'semana' && diffDays <= 7) incluir = true;
+                else if (periodo === 'mes' && dataLog.getMonth() === hoje.getMonth() && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
+                else if (periodo === 'ano' && dataLog.getFullYear() === hoje.getFullYear()) incluir = true;
+                else if (periodo === 'total') incluir = true;
+                else if (periodo === 'data') {
+                    const dataVal = document.getElementById('data-especifica').value;
+                    if (dataVal) {
+                        const [y, m, d] = dataVal.split('-');
+                        if (dataLog.getFullYear() == y && dataLog.getMonth() == (m - 1) && dataLog.getDate() == d) incluir = true;
+                    }
+                }
+
+                if (incluir) {
+                    logsFiltrados.push(log);
+                    const colab = log.colaborador || "Desconhecido";
+                    if (metricaAtual === 'mac') {
+                        contagemColabRaw[colab] = (contagemColabRaw[colab] || 0) + 1;
+                    } else {
+                        if (!contagemColabRaw[colab]) contagemColabRaw[colab] = new Set();
+                        contagemColabRaw[colab].add(log.cto);
+                    }
+                }
+            });
+
+            const finalCount = {};
+            for (const c in contagemColabRaw) {
+                finalCount[c] = metricaAtual === 'mac' ? contagemColabRaw[c] : contagemColabRaw[c].size;
+            }
+
+            renderizarTopRanking(finalCount);
+            renderizarGraficos(finalCount);
+            renderizarTabela(logsFiltrados);
+        }
+
+        function renderizarTopRanking(contagem) {
+            const container = document.getElementById('ranking-list-container');
+            container.innerHTML = '';
+            const arrayRank = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+
+            if (arrayRank.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-secondary); text-align:center; padding: 2rem 0;">Sem dados.</p>';
+                return;
+            }
+
+            const badges = ['gold', 'silver', 'bronze'];
+            arrayRank.slice(0, 5).forEach((item, index) => {
+                const [nome, score] = item;
+                const badge = index < 3 ? badges[index] : 'other';
+                container.innerHTML += `
           <div class="ranking-item">
             <div class="rank-pos ${badge}">${index + 1}</div>
             <div class="rank-info">
@@ -937,26 +1223,26 @@
             <div class="rank-score">${score}</div>
           </div>
         `;
-      });
-    }
+            });
+        }
 
-    function renderizarGraficos(contagem) {
-      const sorted = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-      const labels = sorted.slice(0, 8).map(i => i[0]);
-      const values = sorted.slice(0, 8).map(i => i[1]);
-      const total = values.reduce((sum, value) => sum + value, 0);
-      const colors = ['#2EC4B6', '#3B82F6', '#7C5CFF', '#F8B84E', '#EF4444', '#22D3EE', '#18C964', '#F472B6'];
+        function renderizarGraficos(contagem) {
+            const sorted = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
+            const labels = sorted.slice(0, 8).map(i => i[0]);
+            const values = sorted.slice(0, 8).map(i => i[1]);
+            const total = values.reduce((sum, value) => sum + value, 0);
+            const colors = ['#2EC4B6', '#3B82F6', '#7C5CFF', '#F8B84E', '#EF4444', '#22D3EE', '#18C964', '#F472B6'];
 
-      renderizarPerformanceChart(sorted, total);
+            renderizarPerformanceChart(sorted, total);
 
-      const ctxDist = document.getElementById('distroChart').getContext('2d');
-      if (distroChartInstance) distroChartInstance.destroy();
+            const ctxDist = document.getElementById('distroChart').getContext('2d');
+            if (distroChartInstance) distroChartInstance.destroy();
 
-      document.getElementById('distro-total').innerText = total;
-      document.getElementById('distro-label').innerText = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
+            document.getElementById('distro-total').innerText = total;
+            document.getElementById('distro-label').innerText = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
 
-      const legend = document.getElementById('distro-legend');
-      legend.innerHTML = sorted.slice(0, 5).map(([name, value], index) => `
+            const legend = document.getElementById('distro-legend');
+            legend.innerHTML = sorted.slice(0, 5).map(([name, value], index) => `
         <div class="legend-row">
           <span class="legend-dot" style="background:${colors[index % colors.length]}"></span>
           <span class="legend-name">${name}</span>
@@ -964,58 +1250,58 @@
         </div>
       `).join('');
 
-      distroChartInstance = new Chart(ctxDist, {
-        type: 'doughnut',
-        data: {
-          labels,
-          datasets: [{
-            data: values,
-            backgroundColor: colors,
-            borderColor: '#0B1220',
-            borderWidth: 4,
-            hoverOffset: 8,
-            spacing: 2
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              backgroundColor: 'rgba(7, 12, 24, 0.96)',
-              borderColor: 'rgba(180,205,255,0.18)',
-              borderWidth: 1,
-              padding: 12,
-              cornerRadius: 10
-            }
-          },
-          cutout: '74%'
+            distroChartInstance = new Chart(ctxDist, {
+                type: 'doughnut',
+                data: {
+                    labels,
+                    datasets: [{
+                        data: values,
+                        backgroundColor: colors,
+                        borderColor: '#0B1220',
+                        borderWidth: 4,
+                        hoverOffset: 8,
+                        spacing: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: 'rgba(7, 12, 24, 0.96)',
+                            borderColor: 'rgba(180,205,255,0.18)',
+                            borderWidth: 1,
+                            padding: 12,
+                            cornerRadius: 10
+                        }
+                    },
+                    cutout: '74%'
+                }
+            });
         }
-      });
-    }
 
-    function renderizarPerformanceChart(sorted, total) {
-      const board = document.getElementById('performanceChart');
-      const topItems = sorted.slice(0, 6);
-      const max = topItems.length ? Math.max(...topItems.map(item => item[1])) : 0;
-      const media = topItems.length ? Math.round(total / topItems.length) : 0;
-      const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
+        function renderizarPerformanceChart(sorted, total) {
+            const board = document.getElementById('performanceChart');
+            const topItems = sorted.slice(0, 6);
+            const max = topItems.length ? Math.max(...topItems.map(item => item[1])) : 0;
+            const media = topItems.length ? Math.round(total / topItems.length) : 0;
+            const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
 
-      if (!topItems.length) {
-        board.innerHTML = '<p class="empty-state">Sem dados para o período.</p>';
-        return;
-      }
+            if (!topItems.length) {
+                board.innerHTML = '<p class="empty-state">Sem dados para o período.</p>';
+                return;
+            }
 
-      board.innerHTML = `
+            board.innerHTML = `
         <div class="performance-summary">
           <div class="summary-tile"><span>Total</span><strong>${total}</strong></div>
           <div class="summary-tile"><span>Líder</span><strong>${max}</strong></div>
           <div class="summary-tile"><span>Média</span><strong>${media}</strong></div>
         </div>
         ${topItems.map(([name, value]) => {
-          const width = max ? Math.max(8, Math.round((value / max) * 100)) : 0;
-          return `
+                const width = max ? Math.max(8, Math.round((value / max) * 100)) : 0;
+                return `
             <div class="performance-row">
               <div class="performance-name" title="${name}">${name}</div>
               <div class="performance-track" aria-label="${name}: ${value} ${metricLabel}">
@@ -1024,31 +1310,32 @@
               <div class="performance-value">${value}</div>
             </div>
           `;
-        }).join('')}
+            }).join('')}
       `;
-    }
+        }
 
-    function renderizarTabela(logs) {
-      const tbody = document.getElementById('tabela-logs');
-      tbody.innerHTML = '';
-      const sorted = [...logs].sort((a, b) => parseDateString(b.dataHora) - parseDateString(a.dataHora));
+        function renderizarTabela(logs) {
+            const tbody = document.getElementById('tabela-logs');
+            tbody.innerHTML = '';
+            const sorted = [...logs].sort((a, b) => parseDateString(b.dataHora) - parseDateString(a.dataHora));
 
-      sorted.slice(0, 50).forEach(log => {
-        const tr = document.createElement('tr');
-        const btnFoto = (log.foto && log.foto.startsWith('http'))
-          ? `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-camera"></i> Ver</a>`
-          : `<a href="#" class="foto-btn disabled"><i class="fa-solid fa-ban"></i></a>`;
+            sorted.slice(0, 50).forEach(log => {
+                const tr = document.createElement('tr');
+                const btnFoto = (log.foto && log.foto.startsWith('http'))
+                    ? `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-camera"></i> Ver</a>`
+                    : `<a href="#" class="foto-btn disabled"><i class="fa-solid fa-ban"></i></a>`;
 
-        tr.innerHTML = `
+                tr.innerHTML = `
           <td>${formatDataBR(parseDateString(log.dataHora))}</td>
           <td><div class="badge-colab"><div class="avatar-mini">${getInitials(log.colaborador)}</div>${log.colaborador}</div></td>
           <td><span class="badge-mac">${log.mac}</span></td>
           <td style="font-weight:700">${log.cto}</td>
           <td>${btnFoto}</td>
         `;
-        tbody.appendChild(tr);
-      });
-    }
-  </script>
+                tbody.appendChild(tr);
+            });
+        }
+    </script>
 </body>
+
 </html>
