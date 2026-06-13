@@ -882,7 +882,7 @@
             display: none !important;
         }
 
-        /* ========== RELATÓRIO DE PRODUTIVIDADE ========== */
+        /* ========== RELATÃ“RIO DE PRODUTIVIDADE ========== */
         .relatorio-overlay {
             position: fixed;
             inset: 0;
@@ -1562,7 +1562,7 @@
                     <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-hoje">0</div>
-                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas
+                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Ãšltimas
                     24h</div>
             </div>
 
@@ -1573,16 +1573,16 @@
                 </div>
                 <div class="kpi-value" id="stat-semana">0</div>
                 <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i>
-                    Últimos 7 dias</div>
+                    Ãšltimos 7 dias</div>
             </div>
 
             <div class="kpi-card purple">
                 <div class="kpi-header">
-                    <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
+                    <span class="kpi-title" id="kpi-title-mes">Este MÃªs (MACs)</span>
                     <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-mes">0</div>
-                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês
+                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> MÃªs
                     Atual</div>
             </div>
 
@@ -1593,7 +1593,7 @@
                 </div>
                 <div class="kpi-value" id="stat-total">0</div>
                 <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o
-                    histórico</div>
+                    histÃ³rico</div>
             </div>
         </section>
 
@@ -1675,7 +1675,7 @@
         <div class="relatorio-container">
             <div class="relatorio-header">
                 <div>
-                    <h2>📊 RELAT&Oacute;RIO DE PRODUTIVIDADE</h2>
+                    <h2>ðŸ“Š RELAT&Oacute;RIO DE PRODUTIVIDADE</h2>
                     <span class="relatorio-subtitle">BRASIL DIGITAL</span>
                 </div>
                 <div class="relatorio-header-btns">
@@ -1988,15 +1988,15 @@
             const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
 
             if (!topItems.length) {
-                board.innerHTML = '<p class="empty-state">Sem dados para o período.</p>';
+                board.innerHTML = '<p class="empty-state">Sem dados para o perÃ­odo.</p>';
                 return;
             }
 
             board.innerHTML = `
         <div class="performance-summary">
           <div class="summary-tile"><span>Total</span><strong>${total}</strong></div>
-          <div class="summary-tile"><span>Líder</span><strong>${max}</strong></div>
-          <div class="summary-tile"><span>Média</span><strong>${media}</strong></div>
+          <div class="summary-tile"><span>LÃ­der</span><strong>${max}</strong></div>
+          <div class="summary-tile"><span>MÃ©dia</span><strong>${media}</strong></div>
         </div>
         ${topItems.map(([name, value]) => {
                 const width = max ? Math.max(8, Math.round((value / max) * 100)) : 0;
@@ -2035,7 +2035,7 @@
             });
         }
 
-        // ========== RELATÓRIO DE PRODUTIVIDADE ==========
+        // ========== RELATÃ“RIO DE PRODUTIVIDADE ==========
         function abrirRelatorio() {
             document.getElementById('relatorio-overlay').classList.remove('hidden');
             const hoje = new Date();
