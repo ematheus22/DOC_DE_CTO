@@ -882,7 +882,7 @@
             display: none !important;
         }
 
-        /* ========== RELATÃ“RIO DE PRODUTIVIDADE ========== */
+        /* ========== RELATÓRIO DE PRODUTIVIDADE ========== */
         .relatorio-overlay {
             position: fixed;
             inset: 0;
@@ -1344,12 +1344,24 @@
             }
         }
 
+        .relatorio-logo-img {
+            height: 100px;
+            width: auto;
+            filter: brightness(0) invert(1);
+            transition: all 0.3s;
+        }
+
         /* ========== PRINT STYLES ========== */
         @media print {
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
                 color-adjust: exact !important;
+            }
+
+            .relatorio-logo-img {
+                filter: none !important;
+                height: 90px !important;
             }
 
             body {
@@ -1562,7 +1574,7 @@
                     <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-hoje">0</div>
-                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Ãšltimas
+                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas
                     24h</div>
             </div>
 
@@ -1573,16 +1585,16 @@
                 </div>
                 <div class="kpi-value" id="stat-semana">0</div>
                 <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i>
-                    Ãšltimos 7 dias</div>
+                    Últimos 7 dias</div>
             </div>
 
             <div class="kpi-card purple">
                 <div class="kpi-header">
-                    <span class="kpi-title" id="kpi-title-mes">Este MÃªs (MACs)</span>
+                    <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
                     <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-mes">0</div>
-                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> MÃªs
+                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês
                     Atual</div>
             </div>
 
@@ -1593,7 +1605,7 @@
                 </div>
                 <div class="kpi-value" id="stat-total">0</div>
                 <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o
-                    histÃ³rico</div>
+                    histórico</div>
             </div>
         </section>
 
@@ -1674,9 +1686,12 @@
     <div id="relatorio-overlay" class="relatorio-overlay hidden">
         <div class="relatorio-container">
             <div class="relatorio-header">
-                <div>
-                    <h2>ðŸ“Š RELAT&Oacute;RIO DE PRODUTIVIDADE</h2>
-                    <span class="relatorio-subtitle">BRASIL DIGITAL</span>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <img src="data:image/png;base64,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" alt="Logo" class="relatorio-logo-img">
+                    <div>
+                        <h2><i class="fa-solid fa-chart-bar" style="color: var(--brand-primary); margin-right: 8px;"></i>RELAT&Oacute;RIO DE PRODUTIVIDADE</h2>
+                        <span class="relatorio-subtitle">BRASIL DIGITAL</span>
+                    </div>
                 </div>
                 <div class="relatorio-header-btns">
                     <button onclick="imprimirRelatorio()" class="btn-rel-print"><i class="fa-solid fa-print"></i> Imprimir</button>
@@ -1988,15 +2003,15 @@
             const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
 
             if (!topItems.length) {
-                board.innerHTML = '<p class="empty-state">Sem dados para o perÃ­odo.</p>';
+                board.innerHTML = '<p class="empty-state">Sem dados para o período.</p>';
                 return;
             }
 
             board.innerHTML = `
         <div class="performance-summary">
           <div class="summary-tile"><span>Total</span><strong>${total}</strong></div>
-          <div class="summary-tile"><span>LÃ­der</span><strong>${max}</strong></div>
-          <div class="summary-tile"><span>MÃ©dia</span><strong>${media}</strong></div>
+          <div class="summary-tile"><span>Líder</span><strong>${max}</strong></div>
+          <div class="summary-tile"><span>Média</span><strong>${media}</strong></div>
         </div>
         ${topItems.map(([name, value]) => {
                 const width = max ? Math.max(8, Math.round((value / max) * 100)) : 0;
@@ -2035,7 +2050,7 @@
             });
         }
 
-        // ========== RELATÃ“RIO DE PRODUTIVIDADE ==========
+        // ========== RELATÓRIO DE PRODUTIVIDADE ==========
         function abrirRelatorio() {
             document.getElementById('relatorio-overlay').classList.remove('hidden');
             const hoje = new Date();
@@ -2200,14 +2215,14 @@
             // Render summary cards with HTML entities
             document.getElementById('rel-resumo').innerHTML = `
                 <div class="rel-card"><div class="rel-card-icon"><i class="fa-solid fa-network-wired"></i></div><div class="rel-card-value">${totalMACs.toLocaleString('pt-BR')}</div><div class="rel-card-label">MACs Registrados</div></div>
-                <div class="rel-card"><div class="rel-card-icon" style="background: rgba(124,92,255,0.15); color: var(--brand-purple)"><i class="fa-solid fa-box"></i></div><div class="rel-card-value">${totalCTOs.toLocaleString('pt-BR')}</div><div class="rel-card-label">CTOs &Uacute;nicas</div></div>
+                <div class="rel-card"><div class="rel-card-icon" style="background: rgba(124,92,255,0.15); color: var(--brand-purple)"><i class="fa-solid fa-box"></i></div><div class="rel-card-value">${totalCTOs.toLocaleString('pt-BR')}</div><div class="rel-card-label">CTOs</div></div>
                 <div class="rel-card"><div class="rel-card-icon" style="background: rgba(24,201,100,0.15); color: var(--brand-success)"><i class="fa-solid fa-chart-line"></i></div><div class="rel-card-value">${ritmoUtilizado.toFixed(1)}</div><div class="rel-card-label">${labelRitmo}</div></div>
                 <div class="rel-card"><div class="rel-card-icon" style="background: rgba(248,184,78,0.15); color: var(--brand-warning)"><i class="fa-solid fa-calendar-check"></i></div><div class="rel-card-value">${diasParaConcluir === Infinity ? '&infin;' : diasParaConcluir.toLocaleString('pt-BR')}</div><div class="rel-card-label">Dias &Uacute;teis p/ Concluir</div></div>
             `;
 
             // Render table with HTML entities
             const tecnicos = Object.entries(porTecnico).sort((a, b) => b[1].macs - a[1].macs);
-            let tabelaHTML = `<table><thead><tr><th>#</th><th>T&eacute;cnico</th><th>MACs</th><th>CTOs &Uacute;nicas</th><th>M&eacute;dia MACs/Dia</th><th>M&eacute;dia CTOs/Dia</th></tr></thead><tbody>`;
+            let tabelaHTML = `<table><thead><tr><th>#</th><th>T&eacute;cnico</th><th>MACs</th><th>CTOs</th><th>M&eacute;dia MACs/Dia</th><th>M&eacute;dia CTOs/Dia</th></tr></thead><tbody>`;
             tecnicos.forEach(([nome, dados], i) => {
                 const mediaMac = (dados.macs / diasUteis).toFixed(1);
                 const mediaCto = (dados.ctos.size / diasUteis).toFixed(1);
