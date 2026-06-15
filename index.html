@@ -913,6 +913,49 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .relatorio-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.8rem;
+        }
+
+        .rel-tab-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            padding: 0.5rem 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 2px solid transparent;
+            border-radius: 6px 6px 0 0;
+            outline: none;
+        }
+
+        .rel-tab-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .rel-tab-btn.active {
+            color: var(--brand-primary);
+            border-bottom-color: var(--brand-primary);
+            background: rgba(46, 196, 182, 0.05);
+        }
+
+        .rel-legend-info {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            margin-top: 0.8rem;
+            display: block;
+            text-align: right;
+        }
+
         .relatorio-header {
             display: flex;
             justify-content: space-between;
@@ -1361,7 +1404,7 @@
 
             .relatorio-logo-img {
                 filter: none !important;
-                height: 90px !important;
+                height: 55px !important; /* Balanced logo size */
             }
 
             body {
@@ -1370,6 +1413,7 @@
                 font-family: 'Outfit', Arial, sans-serif !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                font-size: 11px !important;
             }
 
             body > *:not(.relatorio-overlay) {
@@ -1383,7 +1427,8 @@
             #loading,
             .btn-rel-print,
             .btn-rel-close,
-            .relatorio-header-btns {
+            .relatorio-header-btns,
+            .relatorio-tabs {
                 display: none !important;
             }
 
@@ -1406,21 +1451,30 @@
                 border: none !important;
                 box-shadow: none !important;
                 border-radius: 0 !important;
-                padding: 10mm !important;
+                padding: 8mm 12mm !important; /* Balanced container margins */
                 max-width: 100% !important;
+                min-height: 265mm !important; /* Force full page height for short reports, but allow page breaking for long reports */
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: space-between !important;
+                box-sizing: border-box !important;
             }
 
             .relatorio-header {
                 border-bottom: 2px solid #111 !important;
+                margin-bottom: 12px !important;
+                padding-bottom: 6px !important;
             }
 
             .relatorio-header h2 {
                 color: #111 !important;
-                font-size: 1.4rem !important;
+                font-size: 1.3rem !important; /* Beautiful heading */
+                margin: 0 !important;
             }
 
             .relatorio-subtitle {
                 color: #444 !important;
+                font-size: 0.8rem !important;
             }
 
             .relatorio-filtros {
@@ -1431,38 +1485,103 @@
                 display: none !important;
             }
 
+            .relatorio-resumo {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+                margin-bottom: 15px !important;
+            }
+
             .rel-card {
                 background: #f5f5f5 !important;
                 border: 1px solid #ccc !important;
+                padding: 8px 12px !important; /* Balanced card padding */
+                border-radius: 10px !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 10px !important;
             }
 
             .rel-card-icon {
+                display: flex !important; /* Restore icons in print */
                 background: #e0e0e0 !important;
                 color: #333 !important;
+                width: 28px !important;
+                height: 28px !important;
+                border-radius: 50% !important;
+                align-items: center !important;
+                justify-content: center !important;
+                font-size: 0.85rem !important;
+                flex-shrink: 0 !important;
             }
 
             .rel-card-value {
                 color: #111 !important;
+                font-size: 1.15rem !important;
+                line-height: 1.2 !important;
+                font-weight: bold !important;
             }
 
             .rel-card-label {
                 color: #555 !important;
+                font-size: 0.75rem !important;
+            }
+
+            h3 {
+                font-size: 0.95rem !important;
+                margin-top: 15px !important;
+                margin-bottom: 6px !important;
+            }
+
+            /* Fix specificity issue between print flex display and tab hidden class */
+            #rel-conteudo-geral.hidden,
+            #rel-conteudo-individual.hidden {
+                display: none !important;
+            }
+
+            #rel-conteudo-geral:not(.hidden),
+            #rel-conteudo-individual:not(.hidden) {
+                display: flex !important;
+                flex-direction: column !important;
+                flex-grow: 1 !important;
+                justify-content: space-between !important;
             }
 
             .relatorio-tabela {
                 border: 1px solid #ccc !important;
                 background: #fff !important;
+                margin-bottom: 8px !important;
+                flex-grow: 1 !important;
+                display: flex !important;
+                flex-direction: column !important;
+            }
+
+            .relatorio-tabela table {
+                font-size: 11px !important; 
+                line-height: 1.35 !important;
+                height: 100% !important; /* Stretch table to fill container height proportionally */
+                width: 100% !important;
+                border-collapse: collapse !important;
+            }
+
+            .relatorio-tabela tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
             }
 
             .relatorio-tabela th {
                 background: #e8e8e8 !important;
                 color: #111 !important;
                 border-bottom: 2px solid #999 !important;
+                padding: 7px 10px !important;
+                vertical-align: middle !important;
             }
 
             .relatorio-tabela td {
                 color: #222 !important;
                 border-bottom: 1px solid #ddd !important;
+                padding: 7px 10px !important;
+                vertical-align: middle !important;
             }
 
             .relatorio-tabela tbody tr:nth-child(even) {
@@ -1473,20 +1592,32 @@
                 background: #e8f5e9 !important;
                 border-top: 2px solid #333 !important;
                 color: #111 !important;
+                font-weight: bold !important;
+            }
+
+            .badge-mac {
+                padding: 2px 5px !important;
+                font-size: 8.5px !important;
             }
 
             .relatorio-projecao {
                 background: #f5f5f5 !important;
                 border: 1px solid #ccc !important;
+                padding: 12px !important;
+                margin-top: 10px !important;
             }
 
             .relatorio-projecao h3 {
                 color: #111 !important;
+                margin-top: 0 !important;
+                margin-bottom: 8px !important;
             }
 
             .rel-progress-container {
                 background: #e0e0e0 !important;
                 border: 1px solid #bbb !important;
+                height: 18px !important;
+                margin-bottom: 8px !important;
             }
 
             .rel-progress-bar {
@@ -1497,10 +1628,18 @@
             .rel-progress-text {
                 color: #111 !important;
                 text-shadow: none !important;
+                font-size: 9px !important;
+                line-height: 18px !important;
+            }
+
+            .rel-projecao-info {
+                gap: 10px !important;
+                margin-bottom: 8px !important;
             }
 
             .rel-proj-item {
                 background: #f0f0f0 !important;
+                padding: 6px 10px !important;
             }
 
             .rel-proj-item.highlight {
@@ -1510,37 +1649,65 @@
 
             .rel-proj-label {
                 color: #444 !important;
+                font-size: 8px !important;
             }
 
             .rel-proj-value {
                 color: #111 !important;
+                font-size: 11px !important;
+            }
+
+            .rel-ritmo-grid {
+                gap: 8px !important;
             }
 
             .rel-ritmo-card {
                 background: #f5f5f5 !important;
                 border: 1px solid #ccc !important;
+                padding: 6px !important;
             }
 
             .rel-ritmo-dias {
                 color: #555 !important;
+                font-size: 8px !important;
             }
 
             .rel-ritmo-valor {
                 color: #d4760a !important;
+                font-size: 11px !important;
+            }
+
+            .rel-legend-info {
+                font-size: 8.5px !important;
+                margin-top: 8px !important;
+                display: block !important;
+                color: #555 !important;
             }
 
             .relatorio-footer {
                 border-top: 1px solid #ccc !important;
                 color: #666 !important;
+                margin-top: 12px !important;
+                padding-top: 4px !important;
+                font-size: 8.5px !important;
             }
 
             @page {
                 size: A4 portrait;
-                margin: 10mm;
+                margin: 8mm 10mm; /* Balanced print margins */
+            }
+            #rel-tecnico-titulo-print {
+                display: block !important;
+                color: #111 !important;
+                margin-top: 8px !important;
+                margin-bottom: 12px !important;
+                font-size: 1.15rem !important;
+                border-bottom: 2px solid #111 !important;
+                padding-bottom: 5px !important;
             }
         }
-
-    </style>
+        
+        </style>
 </head>
 
 <body>
@@ -1699,6 +1866,11 @@
                 </div>
             </div>
 
+            <div class="relatorio-tabs">
+                <button id="tab-rel-geral" class="rel-tab-btn active" onclick="setRelTab('geral')">📋 Relat&oacute;rio Geral</button>
+                <button id="tab-rel-individual" class="rel-tab-btn" onclick="setRelTab('individual')">👤 Relat&oacute;rio Individual</button>
+            </div>
+
             <div class="relatorio-filtros">
                 <div class="rel-periodo-btns">
                     <button onclick="setRelPeriodo('hoje')" class="rel-btn active">Hoje</button>
@@ -1708,34 +1880,60 @@
                 <div class="rel-datas">
                     <label>De: <input type="date" id="rel-data-inicio"></label>
                     <label>At&eacute;: <input type="date" id="rel-data-fim"></label>
-                    <button onclick="gerarRelatorio()" class="rel-btn rel-btn-gerar"><i class="fa-solid fa-filter"></i> Filtrar</button>
+                    <button onclick="gerarRelatorioGeralOuIndividual()" class="rel-btn rel-btn-gerar"><i class="fa-solid fa-filter"></i> Filtrar</button>
                 </div>
             </div>
 
-            <div class="relatorio-base" style="display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1.2rem; align-items: center;">
-                <label>Total de clientes na base: <input type="number" id="rel-base-total" value="40293" class="relatorio-base-input" style="width: 90px;" oninput="gerarRelatorio()"></label>
-                <label>J&aacute; instalados: <input type="number" id="rel-base-realizados" value="1707" class="relatorio-base-input" style="width: 80px;" oninput="gerarRelatorio()"></label>
-                <label>In&iacute;cio do Projeto: <input type="date" id="rel-data-projeto-inicio" value="2025-12-01" class="relatorio-base-input" style="width: 135px;" onchange="gerarRelatorio()"></label>
-                <label>Ritmo Proje&ccedil;&atilde;o: 
-                    <select id="rel-ritmo-tipo" class="relatorio-base-input" style="width: 170px;" onchange="toggleRitmoInput(); gerarRelatorio();">
-                        <option value="periodo">Ritmo do Per&iacute;odo</option>
-                        <option value="historico" selected>Ritmo Hist&oacute;rico</option>
-                        <option value="manual">Ritmo Personalizado</option>
-                    </select>
-                </label>
-                <input type="number" id="rel-ritmo-manual" value="10" step="0.1" class="relatorio-base-input hidden" style="width: 70px;" oninput="gerarRelatorio()">
+            <div id="rel-conteudo-geral">
+                <div class="relatorio-base" style="display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1.2rem; align-items: center;">
+                    <label>Total de clientes na base: <input type="number" id="rel-base-total" value="40293" class="relatorio-base-input" style="width: 90px;" oninput="gerarRelatorio()"></label>
+                    <label>J&aacute; instalados: <input type="number" id="rel-base-realizados" value="1707" class="relatorio-base-input" style="width: 80px;" oninput="gerarRelatorio()"></label>
+                    <label>In&iacute;cio do Projeto: <input type="date" id="rel-data-projeto-inicio" value="2025-12-01" class="relatorio-base-input" style="width: 135px;" onchange="gerarRelatorio()"></label>
+                    <label>Ritmo Proje&ccedil;&atilde;o: 
+                        <select id="rel-ritmo-tipo" class="relatorio-base-input" style="width: 170px;" onchange="toggleRitmoInput(); gerarRelatorio();">
+                            <option value="periodo">Ritmo do Per&iacute;odo</option>
+                            <option value="historico" selected>Ritmo Hist&oacute;rico</option>
+                            <option value="manual">Ritmo Personalizado</option>
+                        </select>
+                    </label>
+                    <input type="number" id="rel-ritmo-manual" value="10" step="0.1" class="relatorio-base-input hidden" style="width: 70px;" oninput="gerarRelatorio()">
+                </div>
+
+                <div id="rel-resumo" class="relatorio-resumo"></div>
+                <div id="rel-tabela-container" class="relatorio-tabela"></div>
+                <div id="rel-projecao" class="relatorio-projecao"></div>
             </div>
 
-            <div id="rel-resumo" class="relatorio-resumo"></div>
-            <div id="rel-tabela-container" class="relatorio-tabela"></div>
-            <div id="rel-projecao" class="relatorio-projecao"></div>
+            <div id="rel-conteudo-individual" class="hidden">
+                <div class="relatorio-base" style="margin-bottom: 1.2rem; display: flex; align-items: center; gap: 1rem;">
+                    <label>Selecione o T&eacute;cnico: 
+                        <select id="rel-tecnico-selecionado" class="relatorio-base-input" style="width: 250px;" onchange="gerarRelatorioIndividual()">
+                            <!-- Carregado via JS -->
+                        </select>
+                    </label>
+                </div>
+                
+                <!-- Dynamic title that shows in print -->
+                <div id="rel-tecnico-titulo-print" style="margin-bottom: 1.2rem; font-size: 1.25rem; font-weight: 800; color: var(--text-primary); display: none;">
+                    👤 T&eacute;cnico: <span id="rel-tecnico-nome-span"></span>
+                </div>
+                
+                <div id="rel-resumo-individual" class="relatorio-resumo"></div>
+                
+                <h3 style="margin-top: 1.5rem; margin-bottom: 0.8rem; font-size: 0.95rem; font-weight: 800; color: var(--text-primary);"><i class="fa-solid fa-calendar-check" style="color: var(--brand-success); margin-right: 6px;"></i> Rendimento por Dia</h3>
+                <div id="rel-tabela-individual-container" class="relatorio-tabela"></div>
+                
+                <span class="rel-legend-info">* Tempo ativo estimado: Soma do per&iacute;odo de instala&ccedil;&atilde;o por CTO (do primeiro ao &uacute;ltimo MAC) com acr&eacute;scimo de 10 min de preparo/subida em escada por CTO visitada, descontando o almo&ccedil;o (12h &agrave;s 14h) e limitado a 8h/dia (4h aos s&aacute;bados).</span>
+            </div>
+
             <div class="relatorio-footer">
                 <span id="rel-gerado-em"></span>
             </div>
         </div>
     </div>
 
-    <script>
+
+<script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6tdT0URlgf4ES50MHQnAwlpgJDzp8w4mF8I2qUA5s71Y1J984dnDn3SKa_HcHhBlT/exec";
         let distroChartInstance = null;
         window.todosLogs = [];
@@ -2051,6 +2249,54 @@
         }
 
         // ========== RELATÓRIO DE PRODUTIVIDADE ==========
+        let activeRelTab = 'geral';
+
+        function setRelTab(tab) {
+            activeRelTab = tab;
+            document.getElementById('tab-rel-geral').classList.toggle('active', tab === 'geral');
+            document.getElementById('tab-rel-individual').classList.toggle('active', tab === 'individual');
+            document.getElementById('rel-conteudo-geral').classList.toggle('hidden', tab !== 'geral');
+            document.getElementById('rel-conteudo-individual').classList.toggle('hidden', tab !== 'individual');
+            gerarRelatorioGeralOuIndividual();
+        }
+
+        function gerarRelatorioGeralOuIndividual() {
+            if (activeRelTab === 'geral') {
+                gerarRelatorio();
+            } else {
+                gerarRelatorioIndividual();
+            }
+        }
+
+        function carregarTecnicosRelatorio() {
+            const select = document.getElementById('rel-tecnico-selecionado');
+            if (!select) return;
+            const valorAtual = select.value;
+            select.innerHTML = '';
+            
+            const tecnicos = new Set();
+            window.todosLogs.forEach(log => {
+                if (log.colaborador) tecnicos.add(log.colaborador.trim());
+            });
+            
+            const arrayTecnicos = Array.from(tecnicos).sort();
+            if (arrayTecnicos.length === 0) {
+                select.innerHTML = '<option value="">Sem t&eacute;cnicos no banco</option>';
+                return;
+            }
+            
+            arrayTecnicos.forEach(tec => {
+                const opt = document.createElement('option');
+                opt.value = tec;
+                opt.innerText = tec;
+                select.appendChild(opt);
+            });
+            
+            if (valorAtual && arrayTecnicos.includes(valorAtual)) {
+                select.value = valorAtual;
+            }
+        }
+
         function abrirRelatorio() {
             document.getElementById('relatorio-overlay').classList.remove('hidden');
             const hoje = new Date();
@@ -2059,7 +2305,8 @@
             document.getElementById('rel-data-fim').value = hoje.toISOString().split('T')[0];
             setRelPeriodoBtn('mes');
             toggleRitmoInput();
-            gerarRelatorio();
+            carregarTecnicosRelatorio();
+            setRelTab('geral');
         }
 
         function fecharRelatorio() {
@@ -2084,7 +2331,7 @@
             document.getElementById('rel-data-inicio').value = inicio.toISOString().split('T')[0];
             document.getElementById('rel-data-fim').value = hoje.toISOString().split('T')[0];
             setRelPeriodoBtn(tipo);
-            gerarRelatorio();
+            gerarRelatorioGeralOuIndividual();
         }
 
         function setRelPeriodoBtn(tipo) {
@@ -2255,6 +2502,184 @@
                     <div class="rel-ritmo-card"><span class="rel-ritmo-dias">90 dias</span><span class="rel-ritmo-valor">${ritmo90} MACs/dia</span></div>
                 </div>
             `;
+
+            // Timestamp
+            document.getElementById('rel-gerado-em').innerHTML = 'Relat&oacute;rio gerado em: ' + new Date().toLocaleString('pt-BR');
+        }
+
+        function gerarRelatorioIndividual() {
+            const dataInicioStr = document.getElementById('rel-data-inicio').value;
+            const dataFimStr = document.getElementById('rel-data-fim').value;
+            if (!dataInicioStr || !dataFimStr) return;
+
+            const dataInicio = new Date(dataInicioStr + 'T00:00:00');
+            const dataFim = new Date(dataFimStr + 'T23:59:59');
+            const tecnico = document.getElementById('rel-tecnico-selecionado').value;
+
+            if (!tecnico) {
+                document.getElementById('rel-resumo-individual').innerHTML = '<p style="grid-column: span 4; text-align: center; color: var(--text-secondary);">Selecione um t&eacute;cnico para ver os dados.</p>';
+                document.getElementById('rel-tabela-individual-container').innerHTML = '';
+                return;
+            }
+
+            // Update the printed title technician name
+            const printTitleSpan = document.getElementById('rel-tecnico-nome-span');
+            if (printTitleSpan) {
+                printTitleSpan.innerText = tecnico;
+            }
+
+            // Filter logs for this technician and period
+            const logsTecnico = window.todosLogs.filter(log => {
+                if (!log.colaborador || log.colaborador.trim() !== tecnico.trim()) return false;
+                const d = parseDateString(log.dataHora);
+                return d >= dataInicio && d <= dataFim;
+            });
+
+            // Group logs by day (dd/MM/yyyy)
+            const porDia = {};
+            const ctosUnicas = new Set();
+            logsTecnico.forEach(log => {
+                const d = parseDateString(log.dataHora);
+                if (isNaN(d.getTime())) return;
+                const dataChave = d.toLocaleDateString('pt-BR');
+                if (!porDia[dataChave]) porDia[dataChave] = [];
+                porDia[dataChave].push({
+                    log: log,
+                    time: d.getTime(),
+                    hora: d.toLocaleTimeString('pt-BR')
+                });
+                ctosUnicas.add(log.cto);
+            });
+
+            // Calculate active time per day
+            let totalHorasAtivas = 0;
+            let diasTrabalhados = Object.keys(porDia).length;
+            const rendimentoDias = [];
+
+            // Sort days descending (most recent first)
+            const diasOrdenados = Object.keys(porDia).sort((a, b) => {
+                const partsA = a.split('/');
+                const partsB = b.split('/');
+                return new Date(partsB[2], partsB[1]-1, partsB[0]) - new Date(partsA[2], partsA[1]-1, partsA[0]);
+            });
+
+            diasOrdenados.forEach(dia => {
+                const logsDia = porDia[dia].sort((a, b) => a.time - b.time);
+                const firstLog = logsDia[0];
+                const lastLog = logsDia[logsDia.length - 1];
+                
+                // Group logs of this day by CTO
+                const porCtoDia = {};
+                logsDia.forEach(item => {
+                    const ctoId = (item.log.cto || 'Sem CTO').trim();
+                    if (!porCtoDia[ctoId]) porCtoDia[ctoId] = [];
+                    porCtoDia[ctoId].push(item);
+                });
+                
+                let tempoAtivoMsDia = 0;
+                
+                Object.keys(porCtoDia).forEach(ctoId => {
+                    const itemsCto = porCtoDia[ctoId].sort((a, b) => a.time - b.time);
+                    const firstLogCto = itemsCto[0];
+                    const lastLogCto = itemsCto[itemsCto.length - 1];
+                    
+                    let diffMs = lastLogCto.time - firstLogCto.time;
+                    
+                    // Deduct lunch break (12:00 to 14:00) if the interval overlaps it
+                    const firstDate = new Date(firstLogCto.time);
+                    const lunchStart = new Date(firstDate.getFullYear(), firstDate.getMonth(), firstDate.getDate(), 12, 0, 0).getTime();
+                    const lunchEnd = new Date(firstDate.getFullYear(), firstDate.getMonth(), firstDate.getDate(), 14, 0, 0).getTime();
+                    
+                    if (firstLogCto.time < lunchEnd && lastLogCto.time > lunchStart) {
+                        const overlapStart = Math.max(firstLogCto.time, lunchStart);
+                        const overlapEnd = Math.min(lastLogCto.time, lunchEnd);
+                        const overlapMs = Math.max(0, overlapEnd - overlapStart);
+                        diffMs -= overlapMs;
+                    }
+                    
+                    // Add 10 minutes overhead per CTO (ascending/tying procedure)
+                    const ctoMs = diffMs + (10 * 60 * 1000);
+                    tempoAtivoMsDia += ctoMs;
+                });
+                
+                // Cap active hours per day: 4 hours for Saturdays (reduced shift), 8 hours for other days
+                const diaDate = new Date(firstLog.time);
+                const isSabado = diaDate.getDay() === 6;
+                const maxWorkingMs = isSabado ? (4 * 60 * 60 * 1000) : (8 * 60 * 60 * 1000);
+                if (tempoAtivoMsDia > maxWorkingMs) {
+                    tempoAtivoMsDia = maxWorkingMs;
+                }
+                
+                const tempoAtivoHoras = tempoAtivoMsDia / (1000 * 60 * 60);
+                totalHorasAtivas += tempoAtivoHoras;
+                
+                const horas = Math.floor(tempoAtivoHoras);
+                const minutos = Math.round((tempoAtivoHoras - horas) * 60);
+                const tempoAtivoStr = `${horas}h ${minutos}m`;
+                
+                // Get unique CTOs on this day
+                const ctosDia = new Set(logsDia.map(l => l.log.cto));
+
+                rendimentoDias.push({
+                    dia: dia,
+                    inicio: firstLog.hora,
+                    fim: lastLog.hora,
+                    macs: logsDia.length,
+                    ctos: ctosDia.size,
+                    tempoAtivo: tempoAtivoStr
+                });
+            });
+
+            const mediaHorasDiaria = diasTrabalhados > 0 ? (totalHorasAtivas / diasTrabalhados) : 0;
+            const mediaHorasDiariaStr = mediaHorasDiaria > 0 
+                ? `${Math.floor(mediaHorasDiaria)}h ${Math.round((mediaHorasDiaria - Math.floor(mediaHorasDiaria)) * 60)}m`
+                : '—';
+            const totalHorasAtivasStr = totalHorasAtivas > 0
+                ? `${Math.floor(totalHorasAtivas)}h ${Math.round((totalHorasAtivas - Math.floor(totalHorasAtivas)) * 60)}m`
+                : '—';
+
+            // Filter ALL logs in that period to find the total period's MACs
+            const totalPeriodo = window.todosLogs.filter(log => {
+                const d = parseDateString(log.dataHora);
+                return d >= dataInicio && d <= dataFim;
+            }).length;
+            const pctDoTotal = totalPeriodo > 0 ? ((logsTecnico.length / totalPeriodo) * 100).toFixed(1) : 0;
+
+            // Render individual cards
+            document.getElementById('rel-resumo-individual').innerHTML = `
+                <div class="rel-card"><div class="rel-card-icon"><i class="fa-solid fa-network-wired"></i></div><div class="rel-card-value">${logsTecnico.length.toLocaleString('pt-BR')} <span style="font-size: 0.85rem; font-weight: normal; color: var(--text-secondary); margin-left: 2px;">(${pctDoTotal}%)</span></div><div class="rel-card-label">MACs Registrados</div></div>
+                <div class="rel-card"><div class="rel-card-icon" style="background: rgba(124,92,255,0.15); color: var(--brand-purple)"><i class="fa-solid fa-box"></i></div><div class="rel-card-value">${ctosUnicas.size.toLocaleString('pt-BR')}</div><div class="rel-card-label">CTOs Atendidas</div></div>
+                <div class="rel-card"><div class="rel-card-icon" style="background: rgba(24,201,100,0.15); color: var(--brand-success)"><i class="fa-solid fa-calendar-day"></i></div><div class="rel-card-value">${diasTrabalhados}</div><div class="rel-card-label">Dias Trabalhados</div></div>
+                <div class="rel-card"><div class="rel-card-icon" style="background: rgba(248,184,78,0.15); color: var(--brand-warning)"><i class="fa-solid fa-clock"></i></div><div class="rel-card-value" style="font-size: 1.15rem; line-height: 2rem;">${totalHorasAtivasStr}</div><div class="rel-card-label">Tempo Ativo Total</div></div>
+            `;
+
+            // Render worked days table
+            if (rendimentoDias.length === 0) {
+                document.getElementById('rel-tabela-individual-container').innerHTML = '<p class="empty-state" style="text-align:center; padding:1.5rem; color:var(--text-secondary);">Sem atividade registrada neste per&iacute;odo.</p>';
+            } else {
+                let tabHTML = `<table><thead><tr><th>Data</th><th>Primeiro Log (In&iacute;cio)</th><th>&Uacute;ltimo Log (T&eacute;rmino)</th><th>MACs Feitos</th><th>CTOs Feitas</th><th>Tempo Ativo</th></tr></thead><tbody>`;
+                rendimentoDias.forEach(row => {
+                    tabHTML += `<tr>
+                        <td><strong>${row.dia}</strong></td>
+                        <td>${row.inicio}</td>
+                        <td>${row.fim}</td>
+                        <td><strong>${row.macs}</strong></td>
+                        <td>${row.ctos}</td>
+                        <td><span class="badge-mac">${row.tempoAtivo}</span></td>
+                    </tr>`;
+                });
+                // Total row
+                tabHTML += `<tr class="rel-total-row">
+                    <td>Total / M&eacute;dia</td>
+                    <td>—</td>
+                    <td>—</td>
+                    <td><strong>${logsTecnico.length} (${pctDoTotal}%)</strong></td>
+                    <td><strong>${ctosUnicas.size}</strong></td>
+                    <td><strong>M&eacute;dia: ${mediaHorasDiariaStr}/dia</strong></td>
+                </tr>`;
+                tabHTML += `</tbody></table>`;
+                document.getElementById('rel-tabela-individual-container').innerHTML = tabHTML;
+            }
 
             // Timestamp
             document.getElementById('rel-gerado-em').innerHTML = 'Relat&oacute;rio gerado em: ' + new Date().toLocaleString('pt-BR');
