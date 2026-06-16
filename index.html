@@ -1742,7 +1742,7 @@
                     <div class="kpi-icon"><i class="fa-solid fa-bolt-lightning"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-hoje">0</div>
-                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> Últimas
+                <div class="kpi-trend" style="color: var(--brand-primary);"><i class="fa-solid fa-clock"></i> &Uacute;ltimas
                     24h</div>
             </div>
 
@@ -1753,16 +1753,16 @@
                 </div>
                 <div class="kpi-value" id="stat-semana">0</div>
                 <div class="kpi-trend" style="color: var(--brand-success);"><i class="fa-solid fa-calendar-week"></i>
-                    Últimos 7 dias</div>
+                    &Uacute;ltimos 7 dias</div>
             </div>
 
             <div class="kpi-card purple">
                 <div class="kpi-header">
-                    <span class="kpi-title" id="kpi-title-mes">Este Mês (MACs)</span>
+                    <span class="kpi-title" id="kpi-title-mes">Este M&ecirc;s (MACs)</span>
                     <div class="kpi-icon"><i class="fa-solid fa-calendar-check"></i></div>
                 </div>
                 <div class="kpi-value" id="stat-mes">0</div>
-                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> Mês
+                <div class="kpi-trend" style="color: var(--brand-purple);"><i class="fa-solid fa-layer-group"></i> M&ecirc;s
                     Atual</div>
             </div>
 
@@ -1773,7 +1773,7 @@
                 </div>
                 <div class="kpi-value" id="stat-total">0</div>
                 <div class="kpi-trend" style="color: var(--brand-warning);"><i class="fa-solid fa-database"></i> Todo o
-                    histórico</div>
+                    hist&oacute;rico</div>
             </div>
         </section>
 
@@ -1987,6 +1987,31 @@
             aplicarFiltros();
         }
 
+        function setTodosLogs(logs) {
+            const keysVistas = new Set();
+            const logsUnicos = [];
+            
+            logs.forEach(log => {
+                const parsedDate = parseDateString(log.dataHora);
+                const formatted = isNaN(parsedDate.getTime()) ? log.dataHora : formatDataBR(parsedDate);
+                const uniqueKey = `${log.colaborador || ''}|${(log.mac || '').trim().toUpperCase()}|${formatted}`;
+                
+                if (!keysVistas.has(uniqueKey)) {
+                    keysVistas.add(uniqueKey);
+                    logsUnicos.push(log);
+                }
+            });
+            
+            window.todosLogs = logsUnicos;
+            processarKPIsGlobais();
+            aplicarFiltros();
+            
+            // Atualiza as abas de relatório caso o modal esteja aberto
+            if (typeof activeRelTab !== 'undefined') {
+                gerarRelatorioGeralOuIndividual();
+            }
+        }
+
         function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
             try {
@@ -1994,21 +2019,14 @@
                     // Escuta em tempo real para atualizações automáticas na tela sem precisar recarregar!
                     firebase.database().ref('/registros').on('value', (snapshot) => {
                         const dataObj = snapshot.val() || {};
-                        window.todosLogs = Object.values(dataObj).map(log => ({
+                        const logs = Object.values(dataObj).map(log => ({
                             colaborador: log.colaborador || "Desconhecido",
                             mac: log.mac || "",
                             cto: log.cto || "",
                             dataHora: log.dataHora || "",
                             foto: log.fotoUrl || log.fotoBase64 || log.foto || "Sem Foto"
                         }));
-                        processarKPIsGlobais();
-                        aplicarFiltros();
-                        
-                        // Atualiza as abas de relatório caso o modal esteja aberto
-                        if (typeof activeRelTab !== 'undefined') {
-                            gerarRelatorioGeralOuIndividual();
-                        }
-                        
+                        setTodosLogs(logs);
                         document.getElementById('loading').classList.add('hidden');
                     }, (err) => {
                         console.error("Erro ao escutar banco em tempo real: ", err);
@@ -2019,9 +2037,7 @@
                         .then(res => res.json())
                         .then(json => {
                             if (json.status === "success") {
-                                window.todosLogs = json.data;
-                                processarKPIsGlobais();
-                                aplicarFiltros();
+                                setTodosLogs(json.data);
                             } else {
                                 alert("Erro: " + json.message);
                             }
@@ -2042,14 +2058,16 @@
 
         function parseDateString(dateStr) {
             if (!dateStr) return new Date(NaN);
-            if (dateStr.includes('/')) {
-                const parts = dateStr.split(' ');
+            // Remove parenthesized time zone name (e.g. "GMT-0400 (Horário da Venezuela)" -> "GMT-0400")
+            const cleanStr = String(dateStr).split(' (')[0].trim();
+            if (cleanStr.includes('/')) {
+                const parts = cleanStr.split(' ');
                 const datePart = parts[0];
                 const timePart = parts[1] || '00:00:00';
                 const [d, m, y] = datePart.split('/');
                 return new Date(`${y}-${m}-${d}T${timePart}`);
             }
-            return new Date(dateStr);
+            return new Date(cleanStr);
         }
 
         function formatDataBR(dateObj) {
@@ -2259,15 +2277,15 @@
             const metricLabel = metricaAtual === 'mac' ? 'MACs' : 'CTOs';
 
             if (!topItems.length) {
-                board.innerHTML = '<p class="empty-state">Sem dados para o período.</p>';
+                board.innerHTML = '<p class="empty-state">Sem dados para o per\u00edodo.</p>';
                 return;
             }
 
             board.innerHTML = `
         <div class="performance-summary">
           <div class="summary-tile"><span>Total</span><strong>${total}</strong></div>
-          <div class="summary-tile"><span>Líder</span><strong>${max}</strong></div>
-          <div class="summary-tile"><span>Média</span><strong>${media}</strong></div>
+          <div class="summary-tile"><span>L\u00edder</span><strong>${max}</strong></div>
+          <div class="summary-tile"><span>M\u00e9dia</span><strong>${media}</strong></div>
         </div>
         ${topItems.map(([name, value]) => {
                 const width = max ? Math.max(8, Math.round((value / max) * 100)) : 0;
@@ -2691,10 +2709,10 @@
             const mediaHorasDiaria = diasTrabalhados > 0 ? (totalHorasAtivas / diasTrabalhados) : 0;
             const mediaHorasDiariaStr = mediaHorasDiaria > 0 
                 ? `${Math.floor(mediaHorasDiaria)}h ${Math.round((mediaHorasDiaria - Math.floor(mediaHorasDiaria)) * 60)}m`
-                : '—';
+                : '-';
             const totalHorasAtivasStr = totalHorasAtivas > 0
                 ? `${Math.floor(totalHorasAtivas)}h ${Math.round((totalHorasAtivas - Math.floor(totalHorasAtivas)) * 60)}m`
-                : '—';
+                : '-';
 
             // Filter ALL logs in that period to find the total period's MACs
             const totalPeriodo = window.todosLogs.filter(log => {
@@ -2729,8 +2747,8 @@
                 // Total row
                 tabHTML += `<tr class="rel-total-row">
                     <td>Total / M&eacute;dia</td>
-                    <td>—</td>
-                    <td>—</td>
+                    <td>-</td>
+                    <td>-</td>
                     <td><strong>${logsTecnico.length} (${pctDoTotal}%)</strong></td>
                     <td><strong>${ctosUnicas.size}</strong></td>
                     <td><strong>M&eacute;dia: ${mediaHorasDiariaStr}/dia</strong></td>
