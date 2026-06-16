@@ -1705,9 +1705,10 @@
                 border-bottom: 2px solid #111 !important;
                 padding-bottom: 5px !important;
             }
-        }
-        
         </style>
+        <!-- Firebase SDK (Compat version) -->
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 </head>
 
 <body>
@@ -1935,6 +1936,29 @@
 
 <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby6tdT0URlgf4ES50MHQnAwlpgJDzp8w4mF8I2qUA5s71Y1J984dnDn3SKa_HcHhBlT/exec";
+        
+        // CONFIGURAÇÕES DO FIREBASE (COLE SUAS CREDENCIAIS AQUI)
+        const firebaseConfig = {
+            apiKey: "AIzaSyA4NkHmvAhMwQl50xXZvnEP1hRRt0vipC8",
+            authDomain: "doc-de-cto---registro.firebaseapp.com",
+            databaseURL: "https://doc-de-cto---registro-default-rtdb.firebaseio.com",
+            projectId: "doc-de-cto---registro",
+            storageBucket: "doc-de-cto---registro.firebasestorage.app",
+            messagingSenderId: "781167224760",
+            appId: "1:781167224760:web:63535de05c6e79502fd14d"
+        };
+
+        let useFirebase = false;
+        if (firebaseConfig.databaseURL && firebaseConfig.databaseURL !== "COLE_AQUI_SEU_DATABASE_URL") {
+            try {
+                firebase.initializeApp(firebaseConfig);
+                useFirebase = true;
+                console.log("Firebase conectado com sucesso no Dashboard.");
+            } catch (err) {
+                console.error("Erro ao inicializar Firebase no Dashboard:", err);
+            }
+        }
+
         let distroChartInstance = null;
         window.todosLogs = [];
         let metricaAtual = 'mac';
@@ -1963,23 +1987,57 @@
             aplicarFiltros();
         }
 
-        async function carregarDados() {
+        function carregarDados() {
             document.getElementById('loading').classList.remove('hidden');
             try {
-                const res = await fetch(`${SCRIPT_URL}?action=get_dashboard`);
-                const json = await res.json();
-                if (json.status === "success") {
-                    window.todosLogs = json.data;
-                    processarKPIsGlobais();
-                    aplicarFiltros();
+                if (useFirebase) {
+                    // Escuta em tempo real para atualizações automáticas na tela sem precisar recarregar!
+                    firebase.database().ref('/registros').on('value', (snapshot) => {
+                        const dataObj = snapshot.val() || {};
+                        window.todosLogs = Object.values(dataObj).map(log => ({
+                            colaborador: log.colaborador || "Desconhecido",
+                            mac: log.mac || "",
+                            cto: log.cto || "",
+                            dataHora: log.dataHora || "",
+                            foto: log.fotoUrl || log.fotoBase64 || log.foto || "Sem Foto"
+                        }));
+                        processarKPIsGlobais();
+                        aplicarFiltros();
+                        
+                        // Atualiza as abas de relatório caso o modal esteja aberto
+                        if (typeof activeRelTab !== 'undefined') {
+                            gerarRelatorioGeralOuIndividual();
+                        }
+                        
+                        document.getElementById('loading').classList.add('hidden');
+                    }, (err) => {
+                        console.error("Erro ao escutar banco em tempo real: ", err);
+                        document.getElementById('loading').classList.add('hidden');
+                    });
                 } else {
-                    alert("Erro: " + json.message);
+                    fetch(`${SCRIPT_URL}?action=get_dashboard`)
+                        .then(res => res.json())
+                        .then(json => {
+                            if (json.status === "success") {
+                                window.todosLogs = json.data;
+                                processarKPIsGlobais();
+                                aplicarFiltros();
+                            } else {
+                                alert("Erro: " + json.message);
+                            }
+                            document.getElementById('loading').classList.add('hidden');
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            alert("Falha ao sincronizar com o banco de dados.");
+                            document.getElementById('loading').classList.add('hidden');
+                        });
                 }
             } catch (err) {
                 console.error(err);
                 alert("Falha ao sincronizar com o banco de dados.");
+                document.getElementById('loading').classList.add('hidden');
             }
-            document.getElementById('loading').classList.add('hidden');
         }
 
         function parseDateString(dateStr) {
