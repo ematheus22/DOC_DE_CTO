@@ -2019,12 +2019,13 @@
                     // Escuta em tempo real para atualizações automáticas na tela sem precisar recarregar!
                     firebase.database().ref('/registros').on('value', (snapshot) => {
                         const dataObj = snapshot.val() || {};
-                        const logs = Object.values(dataObj).map(log => ({
-                            colaborador: log.colaborador || "Desconhecido",
-                            mac: log.mac || "",
-                            cto: log.cto || "",
-                            dataHora: log.dataHora || "",
-                            foto: log.fotoUrl || log.fotoBase64 || log.foto || "Sem Foto"
+                        const logs = Object.keys(dataObj).map(key => ({
+                            key: key,
+                            colaborador: dataObj[key].colaborador || "Desconhecido",
+                            mac: dataObj[key].mac || "",
+                            cto: dataObj[key].cto || "",
+                            dataHora: dataObj[key].dataHora || "",
+                            foto: dataObj[key].fotoUrl || dataObj[key].fotoBase64 || dataObj[key].foto || "Sem Foto"
                         }));
                         setTodosLogs(logs);
                         document.getElementById('loading').classList.add('hidden');
@@ -2313,12 +2314,16 @@
                     ? `<a href="${log.foto}" target="_blank" class="foto-btn"><i class="fa-solid fa-camera"></i> Ver</a>`
                     : `<a href="#" class="foto-btn disabled"><i class="fa-solid fa-ban"></i></a>`;
 
+                const btnExcluir = (useFirebase && log.key)
+                    ? `<button onclick="excluirRegistroFirebase('${log.key}', '${log.mac}')" class="excluir-btn" style="background: rgba(239, 68, 68, 0.1); color: #EF4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 5px 10px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; font-weight: 600; margin-left: 8px; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'"><i class="fa-solid fa-trash-can"></i> Excluir</button>`
+                    : '';
+
                 tr.innerHTML = `
           <td>${formatDataBR(parseDateString(log.dataHora))}</td>
           <td><div class="badge-colab"><div class="avatar-mini">${getInitials(log.colaborador)}</div>${log.colaborador}</div></td>
           <td><span class="badge-mac">${log.mac}</span></td>
           <td style="font-weight:700">${log.cto}</td>
-          <td>${btnFoto}</td>
+          <td>${btnFoto}${btnExcluir}</td>
         `;
                 tbody.appendChild(tr);
             });
@@ -2760,6 +2765,19 @@
             // Timestamp
             document.getElementById('rel-gerado-em').innerHTML = 'Relat&oacute;rio gerado em: ' + new Date().toLocaleString('pt-BR');
         }
+
+        window.excluirRegistroFirebase = function(key, mac) {
+            if (confirm(`Deseja realmente excluir o registro do MAC ${mac} do Firebase? Isso atualizará o ranking e o log na mesma hora.`)) {
+                firebase.database().ref('/registros/' + key).remove()
+                    .then(() => {
+                        alert("Registro excluído com sucesso do Firebase!");
+                    })
+                    .catch((err) => {
+                        console.error("Erro ao excluir do Firebase: ", err);
+                        alert("Erro ao excluir: " + err.message);
+                    });
+            }
+        };
 
     </script>
 </body>
